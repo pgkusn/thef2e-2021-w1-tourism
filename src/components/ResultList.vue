@@ -1,13 +1,13 @@
 <template>
     <div class="grid grid-cols-4 gap-5">
-        <div v-for="item in showResultList" :key="item.ID" class="overflow-hidden rounded-lg shadow-lg">
+        <div v-for="item in showResultList" :key="item.ID" class="flex flex-col overflow-hidden rounded-lg shadow-lg">
             <img
                 :src="item.Picture.PictureUrl1"
                 :alt="item.Picture.PictureDescription1"
                 onerror="this.src='hero.png'"
                 class="w-full h-[190px] object-cover"
             >
-            <div class="p-4 bg-white">
+            <div class="flex-grow p-4 bg-white">
                 <p>
                     {{ item.Name }}
                 </p>
