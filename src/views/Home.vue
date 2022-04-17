@@ -44,7 +44,7 @@
                 <p class="mb-2 text-lg">
                     搜尋結果
                 </p>
-                <ResultList />
+                <ResultList :name="$props.name" />
             </div>
         </div>
     </div>
@@ -85,7 +85,7 @@ export default {
 
         // 搜尋結果
         const result = ref([]);
-        const filterShowResult = computed(() => result.value.filter(item => item.Name.match(keyword.value)));
+        const filterShowResult = computed(() => result.value.filter(item => item[props.name + 'Name'].match(keyword.value)));
 
         // 搜尋 & 清除
         const search = async event => {

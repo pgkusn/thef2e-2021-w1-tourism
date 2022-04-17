@@ -9,7 +9,7 @@
             >
             <div class="flex-grow p-4 bg-white">
                 <p>
-                    {{ item.Name }}
+                    {{ item[$props.name + 'Name'] }}
                 </p>
                 <p class="leading-loose text-blue-700">
                     {{ item.City || item.Address.slice(0, 3) }}
@@ -50,6 +50,12 @@ import { useStore } from 'vuex';
 import { useRoute, useRouter } from 'vue-router';
 
 export default {
+    props: {
+        name: {
+            type: String,
+            default: ''
+        }
+    },
     setup () {
         const store = useStore();
         const route = useRoute();
