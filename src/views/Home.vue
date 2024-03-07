@@ -1,139 +1,129 @@
+<script setup lang="ts">
+import { useWindowScroll } from '@vueuse/core'
+import { useMainStore } from '@/stores/main'
+import { usePaginatedItems } from '@/composables/paginatedItems'
+import { favorite, toggleFavorite } from '@/composables/favorite'
+import * as Types from '@/types'
+
+const props = defineProps<{
+  type: Types.TourismType
+}>()
+
+const mainStore = useMainStore()
+const router = useRouter()
+const route = useRoute()
+
+const { cityList, orderby, sortedCardList, scrollY } = storeToRefs(mainStore)
+
+const currentType = computed<Types.TourismType>({
+  get: () => props.type,
+  set: (type: Types.TourismType) => {
+    sortedCardList.value[type].length = 0
+    router.push({ params: { type } })
+  },
+})
+
+const searchValue = computed(() => ({
+  city: route.query.city,
+  keyword: route.query.keyword,
+}))
+const search = async ({ city, keyword }: { city: string; keyword: string }) => {
+  await mainStore[`get${props.type}List`](city, keyword)
+  const query = {
+    ...(city && { city }),
+    ...(keyword && { keyword }),
+  }
+  router.push({ query })
+}
+
+// 各分類分頁列表
+const currentPage = computed({
+  get: () => Number(route.query.page) || 1,
+  set: (page: number) => {
+    router.push({ query: { ...route.query, page } })
+  },
+})
+const cardsOfType = computed(() => sortedCardList.value[props.type])
+const { paginatedItems } = usePaginatedItems(cardsOfType, 16)
+const searchResult = computed(() => {
+  return paginatedItems.value[currentPage.value - 1]?.map(item => ({
+    ...item,
+    isFavorite: favorite.value.some(({ id }) => id === item.id),
+  }))
+})
+
+// 保存捲軸位置
+const { y } = useWindowScroll()
+onBeforeRouteLeave(() => {
+  scrollY.value = y.value
+})
+onMounted(() => {
+  window.requestAnimationFrame(() => {
+    y.value = scrollY.value
+  })
+})
+</script>
+
 <template>
-    <div>
-        <div class="px-4 py-10 bg-center bg-cover" :style="{ backgroundImage: 'url(hero.png)' }">
-            <div class="w-[1064px] mx-auto">
-                <h1 class="text-5xl leading-relaxed text-white">
-                    {{ nav[$props.name] }}
-                </h1>
-                <nav class="mb-4">
-                    <router-link
-                        v-for="(value, key) in nav"
-                        :key="key"
-                        :to="{ params: { name: key } }"
-                        replace
-                        class="nav-link"
-                        :class="{ active: $props.name === key }"
-                    >
-                        {{ value }}
-                    </router-link>
-                </nav>
-                <select v-model="selectedCity" class="h-8 px-2 border rounded">
-                    <option value="">
-                        想去的地區
-                    </option>
-                    <option v-for="city in showCities" :key="city.City" :value="city.City">
-                        {{ city.CityName }}
-                    </option>
-                </select>
-                <input
-                    v-model="keyword"
-                    type="text"
-                    class="h-8 px-2 ml-3 border rounded placeholder-[#959595]"
-                    placeholder="景點名稱"
-                >
-                <button class="w-20 h-8 ml-3 text-white bg-red-500 rounded" @click="search">
-                    搜尋
-                </button>
-                <button class="w-20 h-8 ml-1.5 text-white bg-red-400 rounded" @click="reset">
-                    清空條件
-                </button>
-            </div>
+  <TheHeader :type="props.type">
+    <template #logo="{ isSticky }">
+      <SvgIcon :name="isSticky ? 'logo_dart' : 'logo_light'" class="w20 h5 md:(w26 h7)" />
+    </template>
+
+    <template #default="{ title }">
+      <div class="container xl:max-w266">
+        <div
+          class="text-20 leading-26.5 text-white text-shadow-[0px_3px_6px_#00000029] hidden md:block"
+        >
+          {{ title }}
         </div>
-        <div class="px-4 py-10">
-            <div class="w-[1276px] mx-auto">
-                <p class="mb-2 text-lg">
-                    搜尋結果
-                </p>
-                <ResultList :name="$props.name" />
-            </div>
+        <TheNav v-model="currentType" />
+        <SearchForm :cityList="cityList" :initialValue="searchValue" @submit="search" />
+      </div>
+    </template>
+  </TheHeader>
+
+  <main class="flex-grow flex flex-col bg-#F1F1F1 pt6 pb5 md:(pt13 pb18)">
+    <div class="container flex justify-between items-center">
+      <div class="text-sm border-l-4 border-blue-primary pl1 text-gray-dark md:text-xl">
+        搜尋結果
+      </div>
+      <div class="flex items-center gap-x3">
+        <label class="text-sm text-gray-light">排序</label>
+        <div class="relative">
+          <select
+            v-model="orderby"
+            class="h8 rounded-1.5 appearance-none text-sm text-center text-gray-dark pl3 pr8.5"
+          >
+            <option :value="0">預設</option>
+            <option :value="1">景點名稱</option>
+          </select>
+          <div
+            class="i-mdi-chevron-down absolute right-1 inset-y-0 my-auto w7 h7 text-#2A48FF"
+          ></div>
         </div>
+      </div>
     </div>
+
+    <div class="flex-grow">
+      <div class="auto-fill container grid gap-3 mt5 md:(gap-5 mt5.5)">
+        <Card
+          v-for="item in searchResult"
+          :key="item.id"
+          :data="item"
+          :hasBookmark="true"
+          flexDirection="auto"
+          @toggleFavorite="toggleFavorite"
+        />
+      </div>
+    </div>
+
+    <Pagination v-model="currentPage" :total="cardsOfType.length" />
+  </main>
 </template>
 
-<script>
-import { computed, ref, watch } from 'vue';
-import { useStore } from 'vuex';
-import { useRouter, useRoute } from 'vue-router';
-import ResultList from '@/components/ResultList.vue';
-
-export default {
-    components: {
-        ResultList
-    },
-    props: {
-        name: {
-            type: String,
-            default: ''
-        }
-    },
-    setup (props) {
-        const store = useStore();
-        const router = useRouter();
-        const route = useRoute();
-
-        const nav = {
-            ScenicSpot: '景點',
-            Restaurant: '餐飲',
-            Hotel: '旅宿',
-            Activity: '活動'
-        };
-
-        // 地區 & 搜尋文字
-        const showCities = ref([]);
-        const selectedCity = ref('');
-        const keyword = ref('');
-
-        // 搜尋結果
-        const result = ref([]);
-        const filterShowResult = computed(() => result.value.filter(item => item[props.name + 'Name'].match(keyword.value)));
-
-        // 搜尋 & 清除
-        const search = async event => {
-            result.value = await store.dispatch('getShowResult', { name: props.name, city: selectedCity.value });
-            store.dispatch('setShowResultHandler', filterShowResult.value);
-
-            // 組合網址參數
-            const query = {};
-            if (selectedCity.value) {
-                query.city = selectedCity.value;
-            }
-            if (keyword.value) {
-                query.keyword = keyword.value;
-            }
-            if (!event && route.query.page) {
-                query.page = route.query.page;
-            }
-            router.replace({ query });
-        };
-        const reset = async () => {
-            if (!selectedCity.value && !keyword.value) return;
-
-            result.value = await store.dispatch('getShowResult', { name: props.name });
-            store.dispatch('setShowResultHandler', result.value);
-
-            selectedCity.value = '';
-            keyword.value = '';
-            router.replace({ params: { name: props.name } });
-        };
-
-        watch(() => props.name, async () => {
-            if (!showCities.value.length) {
-                showCities.value = await store.dispatch('getCities');
-            }
-            // 抓網址參數
-            selectedCity.value = route.query.city || '';
-            keyword.value = route.query.keyword || '';
-            search();
-        }, { immediate: true });
-
-        return {
-            showCities,
-            selectedCity,
-            keyword,
-            search,
-            reset,
-            nav
-        };
-    }
-};
-</script>
+<style scoped>
+.auto-fill {
+  grid-template-columns: repeat(auto-fill, minmax(304px, 1fr));
+}
+</style>
