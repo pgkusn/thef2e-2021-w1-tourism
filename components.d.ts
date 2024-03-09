@@ -8,6 +8,7 @@ export {}
 declare module 'vue' {
   export interface GlobalComponents {
     Card: typeof import('./src/components/Card.vue')['default']
+    CardImage: typeof import('./src/components/CardImage.vue')['default']
     FavoriteModal: typeof import('./src/components/FavoriteModal.vue')['default']
     IconLike: typeof import('./src/components/icons/IconLike.vue')['default']
     IconLogo: typeof import('./src/components/icons/IconLogo.vue')['default']

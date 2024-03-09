@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import VLazyImage from 'v-lazy-image'
+import { useIntersectionObserver } from '@vueuse/core'
 import * as Types from '@/types'
 
 defineOptions({
@@ -16,12 +16,16 @@ const toggleFavorite = (e: { stopPropagation: () => void }) => {
   e.stopPropagation()
   emit('toggleFavorite', props.data)
 }
-const handleImageError = (target: HTMLImageElement) => {
-  const placeholderImg = 'https://picsum.photos/354/190'
-  if (target.src !== placeholderImg) {
-    target.src = placeholderImg
+
+// lazy load
+const target = ref(null)
+const targetIsVisible = ref(false)
+const { stop } = useIntersectionObserver(target, ([{ isIntersecting }]) => {
+  targetIsVisible.value = isIntersecting
+  if (isIntersecting) {
+    stop()
   }
-}
+})
 </script>
 
 <template>
@@ -40,6 +44,7 @@ const handleImageError = (target: HTMLImageElement) => {
       @click="navigate"
     >
       <div
+        ref="target"
         class="bg-cover bg-center w31 h32 flex-shrink-0"
         :class="[
           { 'md:(w-full h-47.5)': flexDirection === 'auto' },
@@ -47,13 +52,7 @@ const handleImageError = (target: HTMLImageElement) => {
         ]"
         style="background-image: url(https://fakeimg.pl/354x190/?text=Loading)"
       >
-        <v-lazy-image
-          :src="data.picture"
-          :key="data.picture"
-          :alt="data.pictureDescription"
-          class="object-cover w-full h-full"
-          @error="handleImageError"
-        />
+        <CardImage v-if="targetIsVisible" :src="data.picture" :alt="data.pictureDescription" />
       </div>
       <div
         class="px2 py3 flex-grow bg-white"
@@ -123,13 +122,3 @@ const handleImageError = (target: HTMLImageElement) => {
     </div>
   </router-link>
 </template>
-
-<style scoped>
-.v-lazy-image {
-  opacity: 0;
-  transition: opacity 0.4s;
-}
-.v-lazy-image-loaded {
-  opacity: 1;
-}
-</style>

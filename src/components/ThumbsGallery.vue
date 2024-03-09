@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import Swiper from 'swiper'
-import VLazyImage from 'v-lazy-image'
 import * as Types from '@/types'
 
 defineProps<{
@@ -16,13 +15,6 @@ const onSlideChange = () => {
   isBeginning.value = swiperEl.value.swiper.isBeginning
   isEnd.value = swiperEl.value.swiper.isEnd
 }
-
-const handleImageError = (target: HTMLImageElement) => {
-  const placeholderImg = 'https://picsum.photos/354/190'
-  if (target.src !== placeholderImg) {
-    target.src = placeholderImg
-  }
-}
 </script>
 
 <template>
@@ -36,16 +28,10 @@ const handleImageError = (target: HTMLImageElement) => {
         @swiperslidechange="onSlideChange"
       >
         <swiper-slide
-          v-for="(item, index) in items"
+          v-for="item in items"
           style="background-image: url(https://fakeimg.pl/354x190/?text=Loading)"
         >
-          <v-lazy-image
-            :src="item.url"
-            :key="item.url"
-            :alt="item.description"
-            :class="{ '!transition-duration-0': index > 0 }"
-            @error="handleImageError"
-          />
+          <CardImage :key="item.url" :src="item.url" :alt="item.description" />
         </swiper-slide>
       </swiper-container>
       <button
@@ -73,12 +59,7 @@ const handleImageError = (target: HTMLImageElement) => {
           class="rounded-2 overflow-hidden"
           style="background-image: url(https://fakeimg.pl/354x190/?text=Loading)"
         >
-          <v-lazy-image
-            :src="item.url"
-            :key="item.url"
-            :alt="item.description"
-            @error="handleImageError"
-          />
+          <CardImage :src="item.url" :alt="item.description" :key="item.url" />
         </swiper-slide>
       </swiper-container>
     </div>
