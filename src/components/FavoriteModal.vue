@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { TransitionRoot, TransitionChild, Dialog, DialogPanel } from '@headlessui/vue'
-import { useIntersectionObserver, useMediaQuery } from '@vueuse/core'
+import { useMediaQuery } from '@vueuse/core'
 import { usePaginatedItems } from '@/composables/paginatedItems'
 import * as Types from '@/types'
 
@@ -12,50 +12,23 @@ const props = defineProps<{
 
 const isLargeScreen = useMediaQuery('(min-width: 768px)')
 
-const cardList = computed(() => {
-  return isLargeScreen.value ? paginatedCardList.value : infiniteScrollList.value[currentType.value]
-})
-
-// 各分類分頁列表
 const currentType = ref<Types.TourismType>('ScenicSpot')
+const cardsOfType = computed(() => props.items.filter(item => item.type === currentType.value))
+const cardList = computed(() => (isLargeScreen.value ? paginatedCardList.value : cardsOfType.value))
+
+// 分頁列表
 const currentPage = ref(1)
-const cardsOfType = computed(() => {
-  return props.items.filter(item => item.type === currentType.value)
-})
 const { paginatedItems } = usePaginatedItems(cardsOfType, 6)
 const paginatedCardList = computed(() => paginatedItems.value[currentPage.value - 1])
-
-// 手機版無限捲動分頁
-const currentScrollPage = ref(0)
-const infiniteScrollList = ref({
-  ScenicSpot: [] as Types.Card[],
-  Restaurant: [] as Types.Card[],
-  Hotel: [] as Types.Card[],
-  Activity: [] as Types.Card[],
-})
-const hasNextPage = computed(() => currentScrollPage.value < paginatedItems.value.length)
-const target = ref(null)
-useIntersectionObserver(target, ([{ isIntersecting }]) => {
-  if (isIntersecting && hasNextPage.value) {
-    currentScrollPage.value++
-    infiniteScrollList.value[currentType.value] = [
-      ...infiniteScrollList.value[currentType.value],
-      ...paginatedItems.value[currentScrollPage.value - 1],
-    ]
+watch(paginatedCardList, value => {
+  if (!value) {
+    currentPage.value = 1
   }
 })
 
 const handleTypeChange = (newType: Types.TourismType) => {
   currentType.value = newType
   currentPage.value = 1
-  currentScrollPage.value = 0
-  infiniteScrollList.value[currentType.value].length = 0
-}
-const handleCloseModel = () => {
-  currentPage.value = 1
-  currentScrollPage.value = 0
-  infiniteScrollList.value[currentType.value].length = 0
-  currentType.value = 'ScenicSpot'
 }
 </script>
 
@@ -84,7 +57,6 @@ const handleCloseModel = () => {
             leave="duration-200 ease-in"
             leave-from="opacity-100 scale-100"
             leave-to="opacity-0 scale-95"
-            @after-leave="handleCloseModel"
           >
             <DialogPanel
               class="w-full max-w-211 transform overflow-hidden rounded-2xl bg-#F1F1F1 px5 py7.5 text-left align-middle shadow-xl transition-all md:(px0 pt13.5 pb10)"
@@ -103,6 +75,7 @@ const handleCloseModel = () => {
                 />
               </div>
 
+              <!-- TODO: 無內容提示文字 -->
               <div class="flex">
                 <div class="w20 flex-shrink-0 justify-center items-center hidden md:flex">
                   <button
@@ -122,7 +95,6 @@ const handleCloseModel = () => {
                       @toggleFavorite="toggleFavorite"
                     />
                   </div>
-                  <div v-show="!isLargeScreen && hasNextPage" ref="target"></div>
                 </div>
                 <div class="w20 flex-shrink-0 justify-center items-center hidden md:flex">
                   <button
