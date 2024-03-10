@@ -26,7 +26,7 @@ export default defineConfig({
     }),
     Components(),
     createSvgIconsPlugin({
-      iconDirs: [path.resolve(process.cwd(), 'src/assets/images/icons')],
+      iconDirs: [path.resolve(process.cwd(), 'src/assets/images')],
     }),
     VueDevTools(),
   ],

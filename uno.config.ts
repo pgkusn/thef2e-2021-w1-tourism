@@ -28,8 +28,21 @@ export default defineConfig({
       },
       gray: {
         dark: '#2C2C2C',
-        light: '#959595',
+        light: '#6E6E6E',
       },
     },
   },
+  variants: [
+    //@ts-ignore
+    matcher => {
+      // The prefix cannot start with "-" or "hover", you can customize the prefix.
+      if (!matcher.startsWith('&hover:')) return matcher
+      return {
+        // slice `hover:` prefix and passed to the next variants and rules
+        matcher: matcher.slice(7), // The 7 here represents the number of characters in the prefix.
+        parent: [`@media (hover: hover) and (pointer: fine)`],
+        selector: s => `${s}:hover`,
+      }
+    },
+  ],
 })

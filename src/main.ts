@@ -1,6 +1,5 @@
 import '@unocss/reset/tailwind.css'
 import 'virtual:uno.css'
-import './assets/main.css'
 
 import 'virtual:svg-icons-register'
 

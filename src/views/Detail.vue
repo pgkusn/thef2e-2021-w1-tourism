@@ -27,6 +27,7 @@ const handleToggleFavorite = () => {
   })
 }
 
+// TODO: 推薦相同縣市或關鍵字
 // 推薦列表
 const randomCards = ref<Types.Card[]>([])
 const recommendedCards = computed(() => {
@@ -36,7 +37,7 @@ const recommendedCards = computed(() => {
   }))
 })
 const generateRandomCards = () => {
-  const maxRecommendations = 8
+  const maxRecommendations = 50
   const cardsOfType = sortedCardList.value[props.type]
   const filteredCards = cardsOfType.filter(card => card.id !== route.params.id)
   const randomStartIndex = Math.floor(Math.random() * (filteredCards.length - maxRecommendations))
@@ -94,7 +95,7 @@ watch(() => route.params.id, generateRandomCards, { immediate: true })
             <dd class="flex flex-wrap gap-1 pl8 md:gap-3 empty:hidden">
               <div
                 v-for="item in detailData.classes"
-                class="text-sm text-#707070 bg-#C8C8C8 px1 py0.5 rounded"
+                class="text-sm text-#545454 bg-#C8C8C8 px1 py0.5 rounded"
               >
                 {{ item }}
               </div>
@@ -116,12 +117,13 @@ watch(() => route.params.id, generateRandomCards, { immediate: true })
           </dl>
 
           <div
-            class="inline-grid grid-cols-2 min-h12 gap2.5 mt8 [&>a]:(text-sm flex justify-center items-center rounded) md:(min-h15 gap-x5) lg:[&>a]:text-base"
+            class="inline-grid min-h12 gap2.5 mt8 [&>a]:(text-sm flex justify-center items-center rounded) md:(min-h15 gap-x5) lg:[&>a]:text-base"
+            :class="{ 'grid-cols-2': detailData.phone && detailData.websiteUrl }"
           >
             <a
               v-if="detailData.phone"
               :href="`tel:+${detailData.phone}`"
-              class="text-red-primary gap-x1 border border-red-primary p4 hover:bg-#FFE6E6"
+              class="text-red-primary gap-x1 border border-red-primary p4 &hover:bg-#FFE6E6"
             >
               <div class="i-mdi-phone w4 h4"></div>
               {{ detailData.phone }}
@@ -129,7 +131,7 @@ watch(() => route.params.id, generateRandomCards, { immediate: true })
             <a
               v-if="detailData.websiteUrl"
               :href="detailData.websiteUrl"
-              class="text-white bg-red-primary hover:bg-#DB3939 p2"
+              class="text-white bg-red-primary &hover:bg-#DB3939 p2"
               target="_blank"
             >
               官方網站
@@ -139,6 +141,7 @@ watch(() => route.params.id, generateRandomCards, { immediate: true })
           <!-- 收藏按鈕 -->
           <button
             class="absolute right-5 -top-11.5 z-20 w10 h10 shadow-[0px_3px_6px_#00000029] rounded-full bg-white md:(top-4 right-5)"
+            aria-label="collect"
             @click="handleToggleFavorite"
           >
             <div

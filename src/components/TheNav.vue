@@ -29,7 +29,7 @@ const currentType = defineModel()
   <div class="flex gap-x3 mt3.5">
     <label
       v-for="item in typeList"
-      class="w17.5 h8.75 flex justify-center items-center gap-x1 rounded-full text-sm cursor-pointer md:(w27 h12 gap-x2 text-base) hover:shadow-[0px_3px_6px_#00000029]"
+      class="w17.5 h8.75 flex justify-center items-center gap-x1 rounded-full text-sm cursor-pointer md:(w27 h12 gap-x2 text-base) &hover:shadow-[0px_3px_6px_#00000029]"
       :class="
         item.type === currentType
           ? 'bg-#B72323 text-white shadow-[0px_3px_6px_#00000029]'

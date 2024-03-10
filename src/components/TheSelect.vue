@@ -33,7 +33,7 @@ const filteredCity = computed(() =>
       :class="city ? 'text-blue-primary' : 'text-gray-light'"
     ></div>
     <Combobox v-model="city" nullable>
-      <ComboboxButton class="absolute inset-0"></ComboboxButton>
+      <ComboboxButton class="absolute inset-0" aria-label="city"></ComboboxButton>
       <ComboboxInput
         class="w-full h-full rounded-2 shadow-[0px_3px_6px_#00000029] placeholder-gray-light pl11 pr5"
         placeholder="輸入想去的地區"
@@ -52,8 +52,8 @@ const filteredCity = computed(() =>
         >
           <ComboboxOption
             v-for="city in filteredCity"
-            :key="city.City"
             :value="city"
+            :key="city.City"
             as="template"
             v-slot="{ active }"
           >

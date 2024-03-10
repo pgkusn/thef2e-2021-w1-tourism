@@ -89,11 +89,12 @@ onMounted(() => {
         搜尋結果
       </div>
       <div class="flex items-center gap-x3">
-        <label class="text-sm text-gray-light">排序</label>
+        <label id="sort" class="text-sm text-gray-light">排序</label>
         <div class="relative">
           <select
             v-model="orderby"
             class="h8 rounded-1.5 appearance-none text-sm text-center text-gray-dark pl3 pr8.5"
+            aria-labelledby="sort"
           >
             <option :value="0">預設</option>
             <option :value="1">景點名稱</option>
@@ -109,9 +110,9 @@ onMounted(() => {
       <div class="auto-fill container grid gap-3 mt5 md:(gap-5 mt5.5)">
         <Card
           v-for="item in searchResult"
-          :key="item.id"
           :data="item"
-          :hasBookmark="true"
+          :key="item.id"
+          :hasCollect="true"
           flexDirection="auto"
           @toggleFavorite="toggleFavorite"
         />

@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { gsap } from 'gsap'
 import { useWindowScroll } from '@vueuse/core'
-import { useHeader } from '@/composables/header'
 import { favorite, toggleFavorite } from '@/composables/favorite'
 import * as Types from '@/types'
 
@@ -13,6 +12,7 @@ const emit = defineEmits(['changeType'])
 
 const route = useRoute()
 const isOpenModal = ref(false)
+// FIXME: 相同 id 時不會關閉 modal
 watch(
   () => route.params.id,
   () => {
@@ -20,9 +20,21 @@ watch(
   }
 )
 
-const { imgUrl } = useHeader()
-const headerImgUrl = computed(() => `url(${imgUrl[props.type]})`)
+// 背景圖片
+const imgSuf = window.devicePixelRatio > 1 ? '@2x' : ''
+const bgImgMap = new Map([
+  ['ScenicSpot', `/hero_spot${imgSuf}.webp`],
+  ['Restaurant', `/hero_restaurant${imgSuf}.webp`],
+  ['Hotel', `/hero_hotel${imgSuf}.webp`],
+  ['Activity', `/hero_activity${imgSuf}.webp`],
+])
+for (const [_, value] of bgImgMap) {
+  const img = new Image()
+  img.src = value
+}
+const bgImgUrl = computed(() => `url(${bgImgMap.get(props.type)})`)
 
+// 標題
 const titleMap = new Map([
   ['ScenicSpot', '景點'],
   ['Restaurant', '餐飲'],
@@ -58,7 +70,7 @@ watch(isSticky, value => {
         <slot name="logo" :isSticky="isSticky"></slot>
         <slot name="return" :isSticky="isSticky"></slot>
         <button
-          class="w27.5 h9 rounded-1.5 flex gap-x1 justify-center items-center text-sm text-gray-light bg-white shadow-[0px_3px_6px_#00000029]"
+          class="w27.5 h9 rounded-1.5 flex gap-x1 justify-center items-center text-sm text-gray-light bg-white shadow-[0px_3px_6px_#00000029] &hover:text-red-primary &hover:(outline outline-1 outline-red-primary)"
           @click="isOpenModal = true"
         >
           <div class="i-mdi-cards-heart w5 h5"></div>
@@ -74,6 +86,6 @@ watch(isSticky, value => {
 
 <style scoped>
 header {
-  background-image: v-bind(headerImgUrl);
+  background-image: v-bind(bgImgUrl);
 }
 </style>

@@ -36,7 +36,7 @@ watchEffect(() => {
     </div>
     <button
       type="submit"
-      class="text-white text-lg bg-red-primary h12 flex justify-center items-center gap-x2 rounded-2 shadow-[0px_3px_6px_#00000029] hover:bg-#DB3939 md:(w40 h15 flex-shrink-0 text-xl)"
+      class="text-white text-lg bg-red-primary h12 flex justify-center items-center gap-x2 rounded-2 shadow-[0px_3px_6px_#00000029] &hover:bg-#DB3939 md:(w40 h15 flex-shrink-0 text-xl)"
     >
       <div class="i-mdi-magnify w6 h6"></div>
       搜尋

@@ -7,7 +7,7 @@ defineOptions({
 })
 const props = defineProps<{
   data: Types.Card
-  hasBookmark?: boolean
+  hasCollect?: boolean
   flexDirection: 'row' | 'column' | 'auto'
 }>()
 const emit = defineEmits(['toggleFavorite'])
@@ -35,7 +35,7 @@ const { stop } = useIntersectionObserver(target, ([{ isIntersecting }]) => {
     v-slot="{ navigate }"
   >
     <div
-      class="relative flex rounded shadow-[0px_3px_6px_#00000029] cursor-pointer overflow-hidden m0.5 hover:(outline outline-2 outline-red-primary)"
+      class="relative flex rounded shadow-[0px_3px_6px_#00000029] cursor-pointer overflow-hidden m0.5 &hover:(outline outline-2 outline-red-primary)"
       :class="[
         { 'md:(flex-col rounded-3)': flexDirection === 'auto' },
         { 'flex-col !rounded-3': flexDirection === 'column' },
@@ -45,14 +45,14 @@ const { stop } = useIntersectionObserver(target, ([{ isIntersecting }]) => {
     >
       <div
         ref="target"
-        class="bg-cover bg-center w31 h32 flex-shrink-0"
+        class="bg-cover bg-center w31 min-h32 flex-shrink-0"
         :class="[
           { 'md:(w-full h-47.5)': flexDirection === 'auto' },
-          { '!w-full md:h-47.5': flexDirection === 'column' },
+          { '!w-full h32 md:h-47.5': flexDirection === 'column' },
         ]"
         style="background-image: url(https://fakeimg.pl/354x190/?text=Loading)"
       >
-        <CardImage v-if="targetIsVisible" :src="data.picture" :alt="data.pictureDescription" />
+        <Image v-if="targetIsVisible" :src="data.picture" :alt="data.pictureDescription" />
       </div>
       <div
         class="px2 py3 flex-grow bg-white"
@@ -92,19 +92,22 @@ const { stop } = useIntersectionObserver(target, ([{ isIntersecting }]) => {
         >
           <li
             v-for="item in data.classes"
-            class="text-xs text-#707070 bg-#C8C8C8 px1 py0.5 rounded"
-            :class="{ 'md:(text-sm px2 py1)': hasBookmark }"
+            class="text-xs text-#545454 bg-#C8C8C8 px1 py0.5 rounded"
+            :class="{ 'md:(text-sm px2 py1)': hasCollect }"
           >
             {{ item }}
           </li>
         </ul>
+
+        <!-- 收藏按鈕 -->
         <button
-          v-if="hasBookmark"
+          v-if="hasCollect"
           class="absolute right-2 bottom-3 w7 h7 shadow-[0px_3px_6px_#00000029] rounded-full bg-white"
           :class="[
             { 'md:(top-3 bottom-auto right-3 w8 h8)': flexDirection === 'auto' },
             { '!top-3 !bottom-auto !right-3 md:(w8 h8)': flexDirection === 'column' },
           ]"
+          aria-label="collect"
           @click="toggleFavorite"
         >
           <div

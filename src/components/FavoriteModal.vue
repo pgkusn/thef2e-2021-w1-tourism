@@ -116,7 +116,8 @@ const handleCloseModel = () => {
                     <Card
                       v-for="item in cardList"
                       :data="item"
-                      :hasBookmark="true"
+                      :key="item.id"
+                      :hasCollect="true"
                       flexDirection="row"
                       @toggleFavorite="toggleFavorite"
                     />

@@ -12,6 +12,7 @@ declare module 'vue' {
     FavoriteModal: typeof import('./src/components/FavoriteModal.vue')['default']
     IconLike: typeof import('./src/components/icons/IconLike.vue')['default']
     IconLogo: typeof import('./src/components/icons/IconLogo.vue')['default']
+    Image: typeof import('./src/components/Image.vue')['default']
     NavButton: typeof import('./src/components/Home/NavButton.vue')['default']
     Pagination: typeof import('./src/components/Pagination.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']

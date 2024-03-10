@@ -24,6 +24,7 @@ const onSlideChange = () => {
         class="mySwiper absolute inset-0 md:(rounded-2 overflow-hidden)"
         thumbs-swiper=".mySwiper2"
         space-between="10"
+        pagination="true"
         ref="swiperEl"
         @swiperslidechange="onSlideChange"
       >
@@ -31,17 +32,19 @@ const onSlideChange = () => {
           v-for="item in items"
           style="background-image: url(https://fakeimg.pl/354x190/?text=Loading)"
         >
-          <CardImage :key="item.url" :src="item.url" :alt="item.description" />
+          <Image :src="item.url" :alt="item.description" :key="item.url" />
         </swiper-slide>
       </swiper-container>
       <button
         class="navigation left-3 i-mdi-chevron-left-circle"
-        :class="isBeginning ? 'opacity-20' : 'opacity-60'"
+        :disabled="isBeginning"
+        aria-label="previous"
         @click="swiperEl?.swiper.slidePrev()"
       ></button>
       <button
         class="navigation right-3 i-mdi-chevron-right-circle"
-        :class="isEnd ? 'opacity-20' : 'opacity-60'"
+        :disabled="isEnd"
+        aria-label="next"
         @click="swiperEl?.swiper.slideNext()"
       ></button>
     </div>
@@ -59,7 +62,7 @@ const onSlideChange = () => {
           class="rounded-2 overflow-hidden"
           style="background-image: url(https://fakeimg.pl/354x190/?text=Loading)"
         >
-          <CardImage :src="item.url" :alt="item.description" :key="item.url" />
+          <Image :src="item.url" :alt="item.description" :key="item.url" />
         </swiper-slide>
       </swiper-container>
     </div>
@@ -68,6 +71,7 @@ const onSlideChange = () => {
 
 <style scoped>
 swiper-container {
+  --swiper-pagination-color: #fff;
   width: 100%;
   height: 100%;
   margin-left: auto;
@@ -120,6 +124,6 @@ swiper-slide img {
 }
 
 .navigation {
-  @apply w12 h12 text-white absolute bottom-10 z-10 hidden md:block;
+  @apply hidden w12 h12 text-white absolute bottom-10 z-10 opacity-60 disabled:opacity-20 [&:not(:disabled)]:&hover:opacity-100 md:block;
 }
 </style>

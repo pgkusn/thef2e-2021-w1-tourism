@@ -45,7 +45,7 @@ const initDetailPageData = async (to: RouteLocation) => {
 
   try {
     const promises = [getDetailData]
-    if (mainStore.sortedCardList[currentType].length < 8) {
+    if (mainStore.sortedCardList[currentType].length < 100) {
       promises.push(getListData)
     }
     await Promise.all(promises.map(fn => fn()))

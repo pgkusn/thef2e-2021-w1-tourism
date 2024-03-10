@@ -19,9 +19,8 @@ const handleImageError = (e: Event) => {
 <template>
   <img
     :src="src"
-    :class="isLoading ? 'opacity-0' : 'opacity-100'"
     class="object-cover w-full h-full transition-opacity duration-400"
-    alt=""
+    :class="isLoading ? 'opacity-0' : 'opacity-100'"
     @error="handleImageError"
   />
 </template>

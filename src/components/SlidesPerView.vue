@@ -24,12 +24,16 @@ const onSlideChange = () => {
     <swiper-container
       space-between="10"
       slidesPerView="2"
+      centered-slides="true"
+      loop="true"
       :breakpoints="{
         768: {
           slidesPerView: 3,
+          centeredSlides: false,
         },
         1024: {
           slidesPerView: 4,
+          centeredSlides: false,
         },
       }"
       ref="swiperEl"
@@ -37,9 +41,9 @@ const onSlideChange = () => {
     >
       <swiper-slide v-for="item in items" class="h-inherit">
         <Card
-          :key="item.id"
           :data="item"
-          :hasBookmark="true"
+          :key="item.id"
+          :hasCollect="true"
           flexDirection="column"
           class="h-[calc(100%-4px)]"
           @toggleFavorite="toggleFavorite"
@@ -49,12 +53,14 @@ const onSlideChange = () => {
 
     <button
       class="navigation -left-5 i-mdi-chevron-left-circle"
-      :class="isBeginning ? 'opacity-20' : 'opacity-60'"
+      :disabled="isBeginning"
+      aria-label="previous"
       @click="swiperEl?.swiper.slidePrev()"
     ></button>
     <button
       class="navigation -right-5 i-mdi-chevron-right-circle"
-      :class="isEnd ? 'opacity-20' : 'opacity-60'"
+      :disabled="isEnd"
+      aria-label="next"
       @click="swiperEl?.swiper.slideNext()"
     ></button>
   </div>
@@ -74,6 +80,6 @@ swiper-slide img {
 }
 
 .navigation {
-  @apply w11 h11 text-gray-dark absolute bottom-23 z-10 hidden md:block;
+  @apply hidden w11 h11 text-gray-dark absolute bottom-23 z-10 opacity-60 disabled:opacity-20 [&:not(:disabled)]:&hover:opacity-100 md:block;
 }
 </style>

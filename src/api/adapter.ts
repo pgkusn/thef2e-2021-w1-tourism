@@ -7,7 +7,7 @@ export const getScenicSpotList = (data: Types.ScenicSpotListApiResponse[]) => {
     name: item.ScenicSpotName,
     city: item.City || item.Address?.slice(0, 3),
     picture: item.Picture.PictureUrl1 || `https://picsum.photos/354/190?random=${Math.random()}`,
-    pictureDescription: item.Picture.PictureDescription1,
+    pictureDescription: item.Picture.PictureDescription1 || '',
     classes: [item.Class1, item.Class2, item.Class3].filter(Boolean),
   }))
 }
@@ -16,7 +16,7 @@ export const getScenicSpot = (data: Types.ScenicSpotApiResponse) => {
     const key = `PictureUrl${i + 1}` as Types.PictureUrlKey
     return {
       url: data.Picture[key] || `https://picsum.photos/610/389?random=${Math.random()}`,
-      description: data.Picture[`PictureDescription${i + 1}` as Types.PictureDescriptionKey],
+      description: data.Picture[`PictureDescription${i + 1}` as Types.PictureDescriptionKey] || '',
     }
   })
   return {
@@ -46,7 +46,7 @@ export const getRestaurant = (data: Types.RestaurantApiResponse) => {
     const key = `PictureUrl${i + 1}` as Types.PictureUrlKey
     return {
       url: data.Picture[key] || `https://picsum.photos/610/389?random=${Math.random()}`,
-      description: data.Picture[`PictureDescription${i + 1}` as Types.PictureDescriptionKey],
+      description: data.Picture[`PictureDescription${i + 1}` as Types.PictureDescriptionKey] || '',
     }
   })
   return {
@@ -75,7 +75,7 @@ export const getHotel = (data: Types.HotelApiResponse) => {
     const key = `PictureUrl${i + 1}` as Types.PictureUrlKey
     return {
       url: data.Picture[key] || `https://picsum.photos/610/389?random=${Math.random()}`,
-      description: data.Picture[`PictureDescription${i + 1}` as Types.PictureDescriptionKey],
+      description: data.Picture[`PictureDescription${i + 1}` as Types.PictureDescriptionKey] || '',
     }
   })
   return {
@@ -103,7 +103,7 @@ export const getActivity = (data: Types.ActivityApiResponse) => {
     const key = `PictureUrl${i + 1}` as Types.PictureUrlKey
     return {
       url: data.Picture[key] || `https://picsum.photos/610/389?random=${Math.random()}`,
-      description: data.Picture[`PictureDescription${i + 1}` as Types.PictureDescriptionKey],
+      description: data.Picture[`PictureDescription${i + 1}` as Types.PictureDescriptionKey] || '',
     }
   })
   return {
