@@ -19,7 +19,7 @@ const cardList = computed(() => (isLargeScreen.value ? paginatedCardList.value :
 // 分頁列表
 const currentPage = ref(1)
 const { paginatedItems } = usePaginatedItems(cardsOfType, 6)
-const paginatedCardList = computed(() => paginatedItems.value[currentPage.value - 1])
+const paginatedCardList = computed(() => paginatedItems.value[currentPage.value - 1] ?? [])
 watch(paginatedCardList, value => {
   if (!value) {
     currentPage.value = 1
@@ -59,7 +59,7 @@ const handleTypeChange = (newType: Types.TourismType) => {
             leave-to="opacity-0 scale-95"
           >
             <DialogPanel
-              class="w-full max-w-211 transform overflow-hidden rounded-2xl bg-#F1F1F1 px5 py7.5 text-left align-middle shadow-xl transition-all md:(px0 pt13.5 pb10)"
+              class="flex flex-col w-full max-w-211 transform overflow-hidden rounded-2xl bg-#F1F1F1 px5 py7.5 text-left align-middle shadow-xl transition-all md:(px0 pt13.5 pb10)"
             >
               <button
                 class="i-mdi-close w7 h7 absolute top-7.5 right-5 text-gray-light md:(w9 h9 top-5 right-5)"
@@ -75,8 +75,7 @@ const handleTypeChange = (newType: Types.TourismType) => {
                 />
               </div>
 
-              <!-- TODO: 無內容提示文字 -->
-              <div class="flex">
+              <div v-show="cardList.length" class="flex">
                 <div class="w20 flex-shrink-0 justify-center items-center hidden md:flex">
                   <button
                     v-show="currentPage > 1"
@@ -93,6 +92,7 @@ const handleTypeChange = (newType: Types.TourismType) => {
                       :hasCollect="true"
                       flexDirection="row"
                       @toggleFavorite="toggleFavorite"
+                      @handleCardClick="isOpenModel = false"
                     />
                   </div>
                 </div>
@@ -103,6 +103,10 @@ const handleTypeChange = (newType: Types.TourismType) => {
                     @click="currentPage++"
                   ></button>
                 </div>
+              </div>
+
+              <div v-show="!cardList.length" class="flex flex-grow">
+                <p class="text-gray-dark m-a">目前沒有收藏的項目</p>
               </div>
             </DialogPanel>
           </TransitionChild>

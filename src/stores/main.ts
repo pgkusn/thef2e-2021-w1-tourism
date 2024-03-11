@@ -7,6 +7,7 @@ export const useMainStore = defineStore('main', () => {
   const cityList = ref([])
   const orderby = ref(0)
   const scrollY = ref(0)
+  const isOpenModal = ref(false)
 
   const scenicSpotList = ref<Types.Card[]>([])
   const restaurantList = ref<Types.Card[]>([])
@@ -172,6 +173,7 @@ export const useMainStore = defineStore('main', () => {
     cityList,
     orderby,
     scrollY,
+    isOpenModal,
     sortedCardList,
     detailData,
     getCityList,

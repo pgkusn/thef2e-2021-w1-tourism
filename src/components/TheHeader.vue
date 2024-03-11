@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { gsap } from 'gsap'
 import { useWindowScroll } from '@vueuse/core'
-import { favorite, toggleFavorite } from '@/composables/favorite'
+import { useMainStore } from '@/stores/main'
 import * as Types from '@/types'
 
 const props = defineProps<{
@@ -10,15 +10,7 @@ const props = defineProps<{
 }>()
 const emit = defineEmits(['changeType'])
 
-const route = useRoute()
-const isOpenModal = ref(false)
-// FIXME: 相同 id 時不會關閉 modal
-watch(
-  () => route.params.id,
-  () => {
-    isOpenModal.value = false
-  }
-)
+const mainStore = useMainStore()
 
 // 背景圖片
 const imgSuf = window.devicePixelRatio > 1 ? '@2x' : ''
@@ -71,7 +63,7 @@ watch(isSticky, value => {
         <slot name="return" :isSticky="isSticky"></slot>
         <button
           class="w27.5 h9 rounded-1.5 flex gap-x1 justify-center items-center text-sm text-gray-light bg-white shadow-[0px_3px_6px_#00000029] &hover:text-red-primary &hover:(outline outline-1 outline-red-primary)"
-          @click="isOpenModal = true"
+          @click="mainStore.isOpenModal = true"
         >
           <div class="i-mdi-cards-heart w5 h5"></div>
           我的最愛
@@ -80,8 +72,6 @@ watch(isSticky, value => {
     </div>
     <slot :title="title"></slot>
   </header>
-
-  <FavoriteModal v-model="isOpenModal" :items="favorite" :toggleFavorite="toggleFavorite" />
 </template>
 
 <style scoped>
