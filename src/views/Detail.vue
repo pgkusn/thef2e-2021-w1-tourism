@@ -27,8 +27,7 @@ const handleToggleFavorite = () => {
   })
 }
 
-// TODO: 推薦相同縣市或關鍵字
-// 推薦列表
+// 推薦列表 (取前50個同分類隨機排序)
 const randomCards = ref<Types.Card[]>([])
 const recommendedCards = computed(() => {
   return randomCards.value.map(card => ({
@@ -36,14 +35,18 @@ const recommendedCards = computed(() => {
     isFavorite: favorite.value.some(({ id }) => id === card.id),
   }))
 })
-const generateRandomCards = () => {
-  const maxRecommendations = 50
-  const cardsOfType = sortedCardList.value[props.type]
-  const filteredCards = cardsOfType.filter(card => card.id !== route.params.id)
-  const randomStartIndex = Math.floor(Math.random() * (filteredCards.length - maxRecommendations))
-  randomCards.value = filteredCards.slice(randomStartIndex, randomStartIndex + maxRecommendations)
-}
-watch(() => route.params.id, generateRandomCards, { immediate: true })
+const similarClassCards = computed(() => {
+  return sortedCardList.value[props.type].filter(card => {
+    return card.classes.some(c => detailData.value.classes.includes(c)) && card.id !== props.id
+  })
+})
+watch(
+  () => route.params.id,
+  () => {
+    randomCards.value = similarClassCards.value.slice(0, 50).sort(() => Math.random() - 0.5)
+  },
+  { immediate: true }
+)
 </script>
 
 <template>
@@ -73,7 +76,7 @@ watch(() => route.params.id, generateRandomCards, { immediate: true })
 
   <main class="flex-grow bg-#F1F1F1">
     <div :class="{ container: isLargeScreen }">
-      <div class="flex flex-col gap3.5 pt19 md:(flex-row gap5 pt10)">
+      <div class="flex flex-col gap3.5 pt19 pb8 md:(flex-row gap5 pt10 pb11.5)">
         <div class="flex-grow w-auto md:w0">
           <ThumbsGallery :items="detailData.picture" />
         </div>
@@ -156,7 +159,7 @@ watch(() => route.params.id, generateRandomCards, { immediate: true })
         </div>
       </div>
 
-      <div class="px5 py8 md:(px0 pt11.5 pb15)">
+      <div v-if="recommendedCards.length" class="px5 pb8 md:(px0 pb15)">
         <div
           class="text-gray-light mb2.5 md:(text-xl border-l-4 border-blue-primary pl1 text-gray-dark mb5)"
         >
