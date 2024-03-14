@@ -1,16 +1,9 @@
 import axios from 'axios'
 import qs from 'qs'
-import { useLoading, type ActiveLoader } from 'vue-loading-overlay'
+import { isLoading } from '@/composables/loading'
 import * as Types from '@/types'
 
-const $loading = useLoading()
-
-let loader: ActiveLoader | null = null
-
-const hideLoader = () => {
-  loader && loader.hide()
-  loader = null
-}
+let requestCount = 0
 
 const tdxApi = axios.create({
   baseURL: import.meta.env.VITE_API_URL,
@@ -18,10 +11,10 @@ const tdxApi = axios.create({
 
 tdxApi.interceptors.request.use(
   function (config) {
-    if (loader || config.url === '/auth/realms/TDXConnect/protocol/openid-connect/token') {
-      return config
+    requestCount++
+    if (requestCount === 1) {
+      isLoading.value = true
     }
-    loader = $loading.show()
     return config
   },
   function (error) {
@@ -31,11 +24,20 @@ tdxApi.interceptors.request.use(
 tdxApi.interceptors.response.use(
   async function (response) {
     await new Promise(resolve => setTimeout(resolve, 200))
-    hideLoader()
+    requestCount--
+    if (
+      requestCount === 0 &&
+      response.config.url !== '/auth/realms/TDXConnect/protocol/openid-connect/token'
+    ) {
+      isLoading.value = false
+    }
     return response
   },
   function (error) {
-    hideLoader()
+    requestCount--
+    if (requestCount === 0) {
+      isLoading.value = false
+    }
     return Promise.reject(error)
   }
 )

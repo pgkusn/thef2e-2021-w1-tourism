@@ -6,6 +6,7 @@ export const useMainStore = defineStore('main', () => {
   const orderby = ref(0)
   const scrollY = ref(0)
   const isOpenModal = ref(false)
+  const isLoading = ref(false)
 
   const token = ref('')
 
@@ -180,6 +181,7 @@ export const useMainStore = defineStore('main', () => {
     orderby,
     scrollY,
     isOpenModal,
+    isLoading,
     sortedCardList,
     detailData,
     getCityList,
