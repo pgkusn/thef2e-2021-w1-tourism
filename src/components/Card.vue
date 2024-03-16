@@ -51,14 +51,19 @@ const { stop } = useIntersectionObserver(target, ([{ isIntersecting }]) => {
   >
     <div
       ref="target"
-      class="bg-cover bg-center w31 min-h32 flex-shrink-0"
+      class="bg-cover bg-center w31 min-h32 flex-shrink-0 relative"
       :class="[
         { 'md:(w-full h-47.5)': flexDirection === 'auto' },
         { '!w-full h32 md:h-47.5': flexDirection === 'column' },
       ]"
       style="background-image: url(https://fakeimg.pl/354x190/?text=Loading)"
     >
-      <Image v-if="targetIsVisible" :src="data.picture" :alt="data.pictureDescription" />
+      <Image
+        v-if="targetIsVisible"
+        :src="data.picture"
+        :alt="data.pictureDescription"
+        class="absolute left-0 top-0"
+      />
     </div>
     <div
       class="px2 py3 flex-grow bg-white"

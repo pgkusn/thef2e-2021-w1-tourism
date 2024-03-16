@@ -5,11 +5,11 @@ import * as Types from '@/types'
 
 let requestCount = 0
 
-const tdxApi = axios.create({
+const instance = axios.create({
   baseURL: import.meta.env.VITE_API_URL,
 })
 
-tdxApi.interceptors.request.use(
+instance.interceptors.request.use(
   function (config) {
     requestCount++
     if (requestCount === 1) {
@@ -21,14 +21,11 @@ tdxApi.interceptors.request.use(
     return Promise.reject(error)
   }
 )
-tdxApi.interceptors.response.use(
+instance.interceptors.response.use(
   async function (response) {
     await new Promise(resolve => setTimeout(resolve, 200))
     requestCount--
-    if (
-      requestCount === 0 &&
-      response.config.url !== '/auth/realms/TDXConnect/protocol/openid-connect/token'
-    ) {
+    if (requestCount === 0) {
       isLoading.value = false
     }
     return response
@@ -43,20 +40,20 @@ tdxApi.interceptors.response.use(
 )
 
 export const getToken = (data: Types.TokenApiRequest) => {
-  return tdxApi.post('/auth/realms/TDXConnect/protocol/openid-connect/token', qs.stringify(data))
+  return instance.post('/auth/realms/TDXConnect/protocol/openid-connect/token', qs.stringify(data))
 }
-export const getCityList = (config: Types.ApiConfig) => {
-  return tdxApi.get('/api/basic/v2/Basic/City?$select=CityName,City', config)
+export const getCityList = () => {
+  return instance.get('https://kenge-hsieh.firebaseio.com/city.json')
 }
 export const getScenicSpot = (params: string, config: Types.ApiConfig) => {
-  return tdxApi.get(`/api/basic/v2/Tourism/ScenicSpot/${params}`, config)
+  return instance.get(`/api/basic/v2/Tourism/ScenicSpot/${params}`, config)
 }
 export const getRestaurant = (params: string, config: Types.ApiConfig) => {
-  return tdxApi.get(`/api/basic/v2/Tourism/Restaurant/${params}`, config)
+  return instance.get(`/api/basic/v2/Tourism/Restaurant/${params}`, config)
 }
 export const getHotel = (params: string, config: Types.ApiConfig) => {
-  return tdxApi.get(`/api/basic/v2/Tourism/Hotel/${params}`, config)
+  return instance.get(`/api/basic/v2/Tourism/Hotel/${params}`, config)
 }
 export const getActivity = (params: string, config: Types.ApiConfig) => {
-  return tdxApi.get(`/api/basic/v2/Tourism/Activity/${params}`, config)
+  return instance.get(`/api/basic/v2/Tourism/Activity/${params}`, config)
 }

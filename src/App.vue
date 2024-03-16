@@ -15,7 +15,7 @@ const mainStore = useMainStore()
       <RouterView />
     </div>
     <footer class="text-xs text-gray-light py3 text-center md:(text-sm py5)">
-      THE F2E 3rd Week 01 Desin by : Frank Peng
+      THE F2E 3rd Week 01 Design by : Frank Peng
     </footer>
   </div>
 

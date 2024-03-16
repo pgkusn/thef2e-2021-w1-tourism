@@ -12,28 +12,28 @@ const emit = defineEmits(['changeType'])
 
 const mainStore = useMainStore()
 
-// 背景圖片
-const imgSuf = window.devicePixelRatio > 1 ? '@2x' : ''
-const bgImgMap = new Map([
-  ['ScenicSpot', `/hero_spot${imgSuf}.webp`],
-  ['Restaurant', `/hero_restaurant${imgSuf}.webp`],
-  ['Hotel', `/hero_hotel${imgSuf}.webp`],
-  ['Activity', `/hero_activity${imgSuf}.webp`],
+const typeMap = new Map([
+  ['ScenicSpot', { title: '景點', img: 'hero_spot' }],
+  ['Restaurant', { title: '餐飲', img: 'hero_restaurant' }],
+  ['Hotel', { title: '旅宿', img: 'hero_hotel' }],
+  ['Activity', { title: '活動', img: 'hero_activity' }],
 ])
-for (const [_, value] of bgImgMap) {
-  const img = new Image()
-  img.src = value
-}
-const bgImgUrl = computed(() => `url(${bgImgMap.get(props.type)})`)
 
-// 標題
-const titleMap = new Map([
-  ['ScenicSpot', '景點'],
-  ['Restaurant', '餐飲'],
-  ['Hotel', '旅宿'],
-  ['Activity', '活動'],
-])
-const title = computed(() => titleMap.get(props.type))
+const title = computed(() => typeMap.get(props.type)?.title)
+
+// 背景圖片
+const getImageUrl = (name: string) => {
+  const suffix = window.devicePixelRatio > 1 ? '@2x' : ''
+  return new URL(`../assets/images/${name + suffix}.webp`, import.meta.url).href
+}
+for (const [_, value] of typeMap) {
+  const img = new Image()
+  img.src = getImageUrl(value.img)
+}
+const bgImgUrl = computed(() => {
+  const fileName = typeMap.get(props.type)?.img ?? ''
+  return `url(${getImageUrl(fileName)})`
+})
 
 // 置頂元素
 const { y } = useWindowScroll()

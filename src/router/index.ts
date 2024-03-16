@@ -1,4 +1,5 @@
 import { createRouter, createWebHashHistory } from 'vue-router'
+import Swal from 'sweetalert2'
 import { useMainStore } from '@/stores/main'
 
 import type { RouteLocation } from 'vue-router'
@@ -44,6 +45,10 @@ const initDetailPageData = async (to: RouteLocation) => {
   }
 
   try {
+    if (!mainStore.token) {
+      await mainStore.getToken()
+    }
+
     const promises = [getDetailData]
     if (mainStore.sortedCardList[currentType].length < 100) {
       promises.push(getListData)
@@ -80,16 +85,21 @@ const router = createRouter({
       redirect: '/ScenicSpot',
     },
   ],
-  scrollBehavior() {
-    return { top: 0 }
-  },
 })
 
 router.beforeResolve(async (to, from) => {
+  if (!to.meta?.initData) return
   try {
     await (to.meta.initData as Types.InitData)(to, from)
   } catch (error) {
-    console.error((error as Error).message)
+    const message = (error as Error).message
+    await new Promise(resolve => setTimeout(resolve, 200))
+    Swal.fire({
+      title: 'Oops...',
+      text: message || '系統錯誤，請稍後再試',
+      icon: 'error',
+    })
+    console.error(message)
     return false
   }
 })

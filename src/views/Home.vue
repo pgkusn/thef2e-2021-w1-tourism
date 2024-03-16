@@ -3,6 +3,8 @@ import { useWindowScroll } from '@vueuse/core'
 import { useMainStore } from '@/stores/main'
 import { usePaginatedItems } from '@/composables/paginatedItems'
 import { favorite, toggleFavorite } from '@/composables/favorite'
+import logoLight from '@/assets/images/logo_light.svg'
+import logoDart from '@/assets/images/logo_dart.svg'
 import * as Types from '@/types'
 
 const props = defineProps<{
@@ -67,7 +69,7 @@ onMounted(() => {
 <template>
   <TheHeader :type="props.type">
     <template #logo="{ isSticky }">
-      <SvgIcon :name="isSticky ? 'logo_dart' : 'logo_light'" class="w20 h5 md:(w26 h7)" />
+      <img :src="isSticky ? logoDart : logoLight" class="h9" alt="logo" />
     </template>
 
     <template #default="{ title }">

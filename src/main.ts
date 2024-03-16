@@ -1,8 +1,6 @@
 import '@unocss/reset/tailwind.css'
 import 'virtual:uno.css'
 
-import 'virtual:svg-icons-register'
-
 import { createApp } from 'vue'
 import { createPinia } from 'pinia'
 
