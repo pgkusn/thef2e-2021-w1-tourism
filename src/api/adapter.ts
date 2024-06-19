@@ -13,10 +13,11 @@ export const getScenicSpotList = (data: Types.ScenicSpotListApiResponse[]) => {
 }
 export const getScenicSpot = (data: Types.ScenicSpotApiResponse) => {
   const picture = Array.from({ length: 3 }, (_, i) => {
-    const key = `PictureUrl${i + 1}` as Types.PictureUrlKey
+    const key = `PictureUrl${i + 1}` as Types.KeysOfPictureUrl
     return {
       url: data.Picture[key] || `https://picsum.photos/610/389?random=${Math.random()}`,
-      description: data.Picture[`PictureDescription${i + 1}` as Types.PictureDescriptionKey] || '',
+      description:
+        data.Picture[`PictureDescription${i + 1}` as Types.KeysOfPictureDescription] || '',
     }
   })
   return {
@@ -43,10 +44,11 @@ export const getRestaurantList = (data: Types.RestaurantListApiResponse[]) => {
 }
 export const getRestaurant = (data: Types.RestaurantApiResponse) => {
   const picture = Array.from({ length: 3 }, (_, i) => {
-    const key = `PictureUrl${i + 1}` as Types.PictureUrlKey
+    const key = `PictureUrl${i + 1}` as Types.KeysOfPictureUrl
     return {
       url: data.Picture[key] || `https://picsum.photos/610/389?random=${Math.random()}`,
-      description: data.Picture[`PictureDescription${i + 1}` as Types.PictureDescriptionKey] || '',
+      description:
+        data.Picture[`PictureDescription${i + 1}` as Types.KeysOfPictureDescription] || '',
     }
   })
   return {
@@ -72,10 +74,11 @@ export const getHotelList = (data: Types.HotelListApiResponse[]) => {
 }
 export const getHotel = (data: Types.HotelApiResponse) => {
   const picture = Array.from({ length: 3 }, (_, i) => {
-    const key = `PictureUrl${i + 1}` as Types.PictureUrlKey
+    const key = `PictureUrl${i + 1}` as Types.KeysOfPictureUrl
     return {
       url: data.Picture[key] || `https://picsum.photos/610/389?random=${Math.random()}`,
-      description: data.Picture[`PictureDescription${i + 1}` as Types.PictureDescriptionKey] || '',
+      description:
+        data.Picture[`PictureDescription${i + 1}` as Types.KeysOfPictureDescription] || '',
     }
   })
   return {
@@ -100,10 +103,11 @@ export const getActivityList = (data: Types.ActivityListApiResponse[]) => {
 }
 export const getActivity = (data: Types.ActivityApiResponse) => {
   const picture = Array.from({ length: 3 }, (_, i) => {
-    const key = `PictureUrl${i + 1}` as Types.PictureUrlKey
+    const key = `PictureUrl${i + 1}` as Types.KeysOfPictureUrl
     return {
       url: data.Picture[key] || `https://picsum.photos/610/389?random=${Math.random()}`,
-      description: data.Picture[`PictureDescription${i + 1}` as Types.PictureDescriptionKey] || '',
+      description:
+        data.Picture[`PictureDescription${i + 1}` as Types.KeysOfPictureDescription] || '',
     }
   })
   return {

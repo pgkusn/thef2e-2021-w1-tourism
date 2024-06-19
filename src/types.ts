@@ -1,12 +1,19 @@
 import type { RouteLocation } from 'vue-router'
 
-export type TourismType = 'ScenicSpot' | 'Restaurant' | 'Hotel' | 'Activity'
-export type PictureUrlKey = 'PictureUrl1' | 'PictureUrl2' | 'PictureUrl3'
-export type PictureDescriptionKey =
-  | 'PictureDescription1'
-  | 'PictureDescription2'
-  | 'PictureDescription3'
+type PictureUrl = {
+  PictureUrl1: string
+  PictureUrl2: string
+  PictureUrl3: string
+}
+type PictureDescription = {
+  PictureDescription1: string
+  PictureDescription2: string
+  PictureDescription3: string
+}
+export type KeysOfPictureUrl = keyof PictureUrl
+export type KeysOfPictureDescription = keyof PictureDescription
 export type InitData = (to: RouteLocation, from: RouteLocation) => Promise<void>
+export type TourismType = 'ScenicSpot' | 'Restaurant' | 'Hotel' | 'Activity'
 
 export interface City {
   CityName: string
@@ -41,40 +48,17 @@ export interface ScenicSpotListApiResponse {
   ScenicSpotName: string
   Address: string
   City: string
-  Picture: {
-    PictureUrl1: string
-    PictureDescription1: string
-    PictureUrl2: string
-    PictureDescription2: string
-    PictureUrl3: string
-    PictureDescription3: string
-  }
+  Picture: PictureUrl & PictureDescription
   Class1: string
   Class2: string
   Class3: string
   SrcUpdateTime: string
   UpdateTime: string
 }
-export interface ScenicSpotApiResponse {
-  ScenicSpotName: string
-  Address: string
-  City: string
-  Picture: {
-    PictureUrl1: string
-    PictureDescription1: string
-    PictureUrl2: string
-    PictureDescription2: string
-    PictureUrl3: string
-    PictureDescription3: string
-  }
-  Class1: string
-  Class2: string
-  Class3: string
+export interface ScenicSpotApiResponse extends ScenicSpotListApiResponse {
   OpenTime: string
   DescriptionDetail: string
   Phone: string
-  SrcUpdateTime: string
-  UpdateTime: string
   WebsiteUrl: string
 }
 export interface RestaurantListApiResponse {
@@ -82,35 +66,14 @@ export interface RestaurantListApiResponse {
   RestaurantName: string
   Address: string
   City: string
-  Picture: {
-    PictureUrl1: string
-    PictureDescription1: string
-    PictureUrl2: string
-    PictureDescription2: string
-    PictureUrl3: string
-    PictureDescription3: string
-  }
+  Picture: PictureUrl & PictureDescription
   Class: string
   SrcUpdateTime: string
   UpdateTime: string
 }
-export interface RestaurantApiResponse {
-  RestaurantName: string
-  Address: string
-  City: string
-  Picture: {
-    PictureUrl1: string
-    PictureDescription1: string
-    PictureUrl2: string
-    PictureDescription2: string
-    PictureUrl3: string
-    PictureDescription3: string
-  }
-  Class: string
+export interface RestaurantApiResponse extends RestaurantListApiResponse {
   OpenTime: string
   Phone: string
-  SrcUpdateTime: string
-  UpdateTime: string
   WebsiteUrl: string
 }
 export interface HotelListApiResponse {
@@ -118,34 +81,13 @@ export interface HotelListApiResponse {
   HotelName: string
   Address: string
   City: string
-  Picture: {
-    PictureUrl1: string
-    PictureDescription1: string
-    PictureUrl2: string
-    PictureDescription2: string
-    PictureUrl3: string
-    PictureDescription3: string
-  }
+  Picture: PictureUrl & PictureDescription
   Class: string
   SrcUpdateTime: string
   UpdateTime: string
 }
-export interface HotelApiResponse {
-  HotelName: string
-  Address: string
-  City: string
-  Picture: {
-    PictureUrl1: string
-    PictureDescription1: string
-    PictureUrl2: string
-    PictureDescription2: string
-    PictureUrl3: string
-    PictureDescription3: string
-  }
-  Class: string
+export interface HotelApiResponse extends HotelListApiResponse {
   Phone: string
-  SrcUpdateTime: string
-  UpdateTime: string
   WebsiteUrl: string
 }
 export interface ActivityListApiResponse {
@@ -153,35 +95,13 @@ export interface ActivityListApiResponse {
   ActivityName: string
   Address: string
   City: string
-  Picture: {
-    PictureUrl1: string
-    PictureDescription1: string
-    PictureUrl2: string
-    PictureDescription2: string
-    PictureUrl3: string
-    PictureDescription3: string
-  }
+  Picture: PictureUrl & PictureDescription
   Class1: string
   Class2: string
   SrcUpdateTime: string
   UpdateTime: string
 }
-export interface ActivityApiResponse {
-  ActivityName: string
-  Address: string
-  City: string
-  Picture: {
-    PictureUrl1: string
-    PictureDescription1: string
-    PictureUrl2: string
-    PictureDescription2: string
-    PictureUrl3: string
-    PictureDescription3: string
-  }
-  Class1: string
-  Class2: string
+export interface ActivityApiResponse extends ActivityListApiResponse {
   Phone: string
-  SrcUpdateTime: string
-  UpdateTime: string
   WebsiteUrl: string
 }
