@@ -7,23 +7,13 @@ import logoLight from '@/assets/images/logo_light.svg'
 import logoDart from '@/assets/images/logo_dart.svg'
 import * as Types from '@/types'
 
-const props = defineProps<{
-  type: Types.TourismType
-}>()
+const props = defineProps<{ type: Types.TourismType }>()
 
 const mainStore = useMainStore()
 const router = useRouter()
 const route = useRoute()
 
 const { cityList, orderby, sortedCardList, scrollY } = storeToRefs(mainStore)
-
-const currentType = computed<Types.TourismType>({
-  get: () => props.type,
-  set: (type: Types.TourismType) => {
-    sortedCardList.value[type].length = 0
-    router.push({ params: { type } })
-  },
-})
 
 const searchValue = computed(() => ({
   city: route.query.city,
@@ -67,7 +57,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <TheHeader :type="props.type">
+  <TheHeader :type="type">
     <template #logo="{ isSticky }">
       <img :src="isSticky ? logoDart : logoLight" class="h9" alt="logo" />
     </template>
@@ -79,7 +69,7 @@ onMounted(() => {
         >
           {{ title }}
         </div>
-        <TheNav v-model="currentType" />
+        <TheNav :currentType="type" />
         <SearchForm :cityList="cityList" :initialValue="searchValue" @submit="search" />
       </div>
     </template>
