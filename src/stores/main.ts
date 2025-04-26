@@ -4,7 +4,6 @@ import * as Types from '@/types'
 
 export const useMainStore = defineStore('main', () => {
   const orderby = ref(0)
-  const scrollY = ref(0)
   const isOpenModal = ref(false)
   const isLoading = ref(false)
 
@@ -175,7 +174,6 @@ export const useMainStore = defineStore('main', () => {
     getToken,
     cityList,
     orderby,
-    scrollY,
     isOpenModal,
     isLoading,
     sortedCardList,

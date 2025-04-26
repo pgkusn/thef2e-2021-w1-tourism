@@ -60,6 +60,8 @@ const initDetailPageData = async (to: RouteLocation) => {
   }
 }
 
+let cachedScrollY = 0
+
 const router = createRouter({
   history: createWebHashHistory(import.meta.env.BASE_URL),
   routes: [
@@ -72,20 +74,41 @@ const router = createRouter({
       name: 'home',
       component: () => import('@/views/Home.vue'),
       props: true,
-      meta: { initData: initHomePageData },
+      meta: {
+        initData: initHomePageData,
+        saveScrollPosition: true,
+      },
     },
     {
       path: '/:type(ScenicSpot|Restaurant|Hotel|Activity)/:id',
       name: 'detail',
       component: () => import('@/views/Detail.vue'),
       props: true,
-      meta: { initData: initDetailPageData },
+      meta: {
+        initData: initDetailPageData,
+      },
     },
     {
       path: '/:pathMatch(.*)*',
       redirect: '/ScenicSpot',
     },
   ],
+  scrollBehavior(to, from, savedPosition) {
+    if (savedPosition) {
+      return savedPosition
+    } else if (to.meta.saveScrollPosition && to.name !== from.name) {
+      return { top: cachedScrollY }
+    } else {
+      return { top: 0 }
+    }
+  },
+})
+
+// 離開頁面前保存滾動位置
+router.beforeEach((to, from) => {
+  if (from.meta.saveScrollPosition) {
+    cachedScrollY = window.scrollY
+  }
 })
 
 router.beforeResolve(async (to, from) => {

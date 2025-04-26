@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { useWindowScroll } from '@vueuse/core'
 import { useMainStore } from '@/stores/main'
 import { usePaginatedItems } from '@/composables/paginatedItems'
 import { favorite, toggleFavorite } from '@/composables/favorite'
@@ -13,7 +12,7 @@ const mainStore = useMainStore()
 const router = useRouter()
 const route = useRoute()
 
-const { cityList, orderby, sortedCardList, scrollY } = storeToRefs(mainStore)
+const { cityList, orderby, sortedCardList } = storeToRefs(mainStore)
 
 const searchValue = computed(() => ({
   city: route.query.city,
@@ -42,17 +41,6 @@ const searchResult = computed(() => {
     ...item,
     isFavorite: favorite.value.some(({ id }) => id === item.id),
   }))
-})
-
-// 保存捲軸位置
-const { y } = useWindowScroll()
-onBeforeRouteLeave(() => {
-  scrollY.value = y.value
-})
-onMounted(() => {
-  window.requestAnimationFrame(() => {
-    y.value = scrollY.value
-  })
 })
 </script>
 

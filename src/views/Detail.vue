@@ -56,6 +56,7 @@ watch(
         :to="{ name: 'home', query: $route.query }"
         class="flex items-center text-sm md:text-lg"
         :class="[isSticky ? 'text-gray-dark' : 'text-white']"
+        replace
       >
         <div
           :class="[isSticky ? '#2C2C2C' : '#FFF']"
