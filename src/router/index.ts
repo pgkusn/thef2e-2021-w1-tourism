@@ -1,5 +1,6 @@
 import { createRouter, createWebHashHistory } from 'vue-router'
 import Swal from 'sweetalert2'
+import { isAxiosError } from 'axios'
 import { useMainStore } from '@/stores/main'
 
 import type { RouteLocation } from 'vue-router'
@@ -89,17 +90,22 @@ const router = createRouter({
 
 router.beforeResolve(async (to, from) => {
   if (!to.meta?.initData) return
+
   try {
     await (to.meta.initData as Types.InitData)(to, from)
   } catch (error) {
-    const message = (error as Error).message
     await new Promise(resolve => setTimeout(resolve, 200))
-    Swal.fire({
-      title: 'Oops...',
-      text: message || '系統錯誤，請稍後再試',
-      icon: 'error',
-    })
-    console.error(message)
+
+    if (isAxiosError(error) && error.response?.status === 429) {
+      Swal.fire({
+        title: 'Oops...',
+        text: '請求過於頻繁，請稍後再試',
+        icon: 'error',
+        footer: '存取頻率：5 次/分',
+      })
+    }
+
+    console.error(error)
     return false
   }
 })

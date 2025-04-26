@@ -22,7 +22,7 @@ export const useMainStore = defineStore('main', () => {
       token.value = `Bearer ${access_token}`
       setTimeout(getToken, 21600000)
     } catch (error) {
-      throw new Error('系統錯誤，請稍後再試')
+      throw error
     }
   }
 
@@ -33,7 +33,7 @@ export const useMainStore = defineStore('main', () => {
     try {
       cityList.value = await api.getCityList().then(res => res.data)
     } catch (error) {
-      throw new Error('系統錯誤，請稍後再試')
+      throw error
     }
   }
 
@@ -67,7 +67,7 @@ export const useMainStore = defineStore('main', () => {
       })
       scenicSpotList.value = apiAdapter.getScenicSpotList(data)
     } catch (error) {
-      throw new Error('系統錯誤，請稍後再試')
+      throw error
     }
   }
   // 取得所有餐飲資料
@@ -80,7 +80,7 @@ export const useMainStore = defineStore('main', () => {
       })
       restaurantList.value = apiAdapter.getRestaurantList(data)
     } catch (error) {
-      throw new Error('系統錯誤，請稍後再試')
+      throw error
     }
   }
   // 取得所有旅宿資料
@@ -93,7 +93,7 @@ export const useMainStore = defineStore('main', () => {
       })
       hotelList.value = apiAdapter.getHotelList(data)
     } catch (error) {
-      throw new Error('系統錯誤，請稍後再試')
+      throw error
     }
   }
   // 取得所有活動資料
@@ -106,7 +106,7 @@ export const useMainStore = defineStore('main', () => {
       })
       activityList.value = apiAdapter.getActivityList(data)
     } catch (error) {
-      throw new Error('系統錯誤，請稍後再試')
+      throw error
     }
   }
 
@@ -124,7 +124,7 @@ export const useMainStore = defineStore('main', () => {
       if (!data.length) throw new Error('找不到網頁')
       detailData.value = apiAdapter.getScenicSpot(data[0])
     } catch (error) {
-      throw new Error('系統錯誤，請稍後再試')
+      throw error
     }
   }
   // 取得指定餐飲資料
@@ -138,7 +138,7 @@ export const useMainStore = defineStore('main', () => {
       if (!data.length) throw new Error('找不到網頁')
       detailData.value = apiAdapter.getRestaurant(data[0])
     } catch (error) {
-      throw new Error('系統錯誤，請稍後再試')
+      throw error
     }
   }
   // 取得指定旅宿資料
@@ -152,7 +152,7 @@ export const useMainStore = defineStore('main', () => {
       if (!data.length) throw new Error('找不到網頁')
       detailData.value = apiAdapter.getHotel(data[0])
     } catch (error) {
-      throw new Error('系統錯誤，請稍後再試')
+      throw error
     }
   }
   // 取得指定活動資料
@@ -166,7 +166,7 @@ export const useMainStore = defineStore('main', () => {
       if (!data.length) throw new Error('找不到網頁')
       detailData.value = apiAdapter.getActivity(data[0])
     } catch (error) {
-      throw new Error('系統錯誤，請稍後再試')
+      throw error
     }
   }
 
