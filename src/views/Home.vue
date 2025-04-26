@@ -14,6 +14,14 @@ const route = useRoute()
 
 const { cityList, orderby, sortedCardList } = storeToRefs(mainStore)
 
+const currentType = computed<Types.TourismType>({
+  get: () => props.type,
+  set: (type: Types.TourismType) => {
+    sortedCardList.value[type].length = 0
+    router.push({ params: { type } })
+  },
+})
+
 const searchValue = computed(() => ({
   city: route.query.city,
   keyword: route.query.keyword,
@@ -57,7 +65,7 @@ const searchResult = computed(() => {
         >
           {{ title }}
         </div>
-        <TheNav :currentType="type" />
+        <TheNav v-model="currentType" />
         <SearchForm :cityList="cityList" :initialValue="searchValue" @submit="search" />
       </div>
     </template>
