@@ -10,7 +10,7 @@ import VueDevTools from 'vite-plugin-vue-devtools'
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  base: process.env.NODE_ENV === 'production' ? '/travel-guide/' : '/',
+  base: process.env.NODE_ENV === 'production' ? '/thef2e-2021-w1-tourism/' : '/',
   plugins: [
     vue({
       template: {
