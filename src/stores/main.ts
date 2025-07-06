@@ -12,13 +12,8 @@ export const useMainStore = defineStore('main', () => {
   // 取得 token (每6小時)
   const getToken = async () => {
     try {
-      const data = {
-        grant_type: 'client_credentials',
-        client_id: import.meta.env.VITE_CLIENT_ID,
-        client_secret: import.meta.env.VITE_CLIENT_SECRET,
-      }
-      const { access_token } = await api.getToken(data).then(res => res.data)
-      token.value = `Bearer ${access_token}`
+      const { data } = await api.getToken()
+      token.value = `Bearer ${data.token}`
       setTimeout(getToken, 21600000)
     } catch (error) {
       throw error

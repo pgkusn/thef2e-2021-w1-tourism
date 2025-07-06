@@ -39,8 +39,10 @@ instance.interceptors.response.use(
   }
 )
 
-export const getToken = (data: Types.TokenApiRequest) => {
-  return instance.post('/auth/realms/TDXConnect/protocol/openid-connect/token', qs.stringify(data))
+export const getToken = () => {
+  return instance.get('/tdx/token/tourism', {
+    baseURL: import.meta.env.VITE_TOKEN_API_URL,
+  })
 }
 export const getCityList = () => {
   return instance.get('https://kenge-hsieh.firebaseio.com/city.json')

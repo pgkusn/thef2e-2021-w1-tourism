@@ -38,11 +38,6 @@ export interface ApiConfig {
     Authorization: string
   }
 }
-export interface TokenApiRequest {
-  grant_type: string
-  client_id: string
-  client_secret: string
-}
 export interface ScenicSpotListApiResponse {
   ScenicSpotID: string
   ScenicSpotName: string
