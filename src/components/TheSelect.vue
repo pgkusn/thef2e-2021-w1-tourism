@@ -9,9 +9,7 @@ import {
 } from '@headlessui/vue'
 import * as Types from '@/types'
 
-const city = defineModel<{
-  type: Types.City | null
-}>()
+const city = defineModel<Types.City | null>()
 const props = defineProps<{
   options: Types.City[]
 }>()
