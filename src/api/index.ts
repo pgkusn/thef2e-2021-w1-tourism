@@ -47,15 +47,29 @@ export const getToken = () => {
 export const getCityList = () => {
   return instance.get('https://kenge-hsieh.firebaseio.com/city.json')
 }
+const TOURISM_V2 = '/api/tourism/service/odata/V2/Tourism'
+
 export const getScenicSpot = (params: string, config: Types.ApiConfig) => {
-  return instance.get(`/api/basic/v2/Tourism/ScenicSpot/${params}`, config)
+  return instance.get<Types.ODataResponse<Types.AttractionApiResponse>>(
+    `${TOURISM_V2}/Attraction${params}`,
+    config
+  )
 }
 export const getRestaurant = (params: string, config: Types.ApiConfig) => {
-  return instance.get(`/api/basic/v2/Tourism/Restaurant/${params}`, config)
+  return instance.get<Types.ODataResponse<Types.RestaurantApiResponse>>(
+    `${TOURISM_V2}/Restaurant${params}`,
+    config
+  )
 }
 export const getHotel = (params: string, config: Types.ApiConfig) => {
-  return instance.get(`/api/basic/v2/Tourism/Hotel/${params}`, config)
+  return instance.get<Types.ODataResponse<Types.HotelApiResponse>>(
+    `${TOURISM_V2}/Hotel${params}`,
+    config
+  )
 }
 export const getActivity = (params: string, config: Types.ApiConfig) => {
-  return instance.get(`/api/basic/v2/Tourism/Activity/${params}`, config)
+  return instance.get<Types.ODataResponse<Types.EventApiResponse>>(
+    `${TOURISM_V2}/Event${params}`,
+    config
+  )
 }

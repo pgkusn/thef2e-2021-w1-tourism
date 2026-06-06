@@ -1,0 +1,38 @@
+schema: spec-driven
+
+# Project context (optional)
+# This is shown to AI when creating artifacts.
+context: |
+  專案：台灣旅遊景點導覽網站，透過交通部 TDX 觀光資料 API 提供景點、餐飲、
+  旅宿、活動四類資訊查詢，支援縣市篩選、關鍵字搜尋與收藏功能。
+
+  技術棧：Vue 3 + TypeScript + Vite、Pinia（狀態管理）、Vue Router、UnoCSS
+  （原子化 CSS）、Axios（HTTP）、Swiper（輪播）、Radix Vue & Headless UI、
+  Vitest（單元測試）、GSAP（動畫）。
+
+  架構慣例：
+  - 路由採 /:type/:id 模式，4 條主路由（ScenicSpot/Restaurant/Hotel/Activity）。
+  - 資料流：路由守衛 beforeResolve → 初始化函式 → Pinia store（useMainStore）
+    取得 token 與資料 → API 層取原始資料 → adapter 轉成統一格式 → 組件顯示。
+  - API 方法集中於 src/api/index.ts；原始回應一律經 src/api/adapter.ts 轉換為
+    統一的 Card（列表）與詳情格式，UI 層不直接讀 API 原始結構。
+  - 查詢以 OData 語法組裝（$select/$filter/$top），所有請求需帶 Authorization token。
+  - 型別定義集中於 src/types.ts；自動匯入組件與組合式函式。
+
+  環境變數：VITE_API_URL（TDX API 基礎 URL）、VITE_TOKEN_API_URL（token 取得）、
+  VITE_CLIENT_ID、VITE_CLIENT_SECRET。token 每 6 小時自動刷新；注意 429 速率限制
+  （正式 API 約 5 次/分）與 401（token 過期）。
+
+  限制：生產環境構建含型別檢查，型別錯誤會導致構建失敗；部署至 GitHub Pages，
+  基礎路徑 /thef2e-2021-w1-tourism/。
+
+# Per-artifact rules (optional)
+rules:
+  proposal:
+    - 一律以繁體中文撰寫
+  design:
+    - 一律以繁體中文撰寫
+  specs:
+    - 一律以繁體中文撰寫
+  tasks:
+    - 一律以繁體中文撰寫

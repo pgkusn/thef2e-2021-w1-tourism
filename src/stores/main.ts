@@ -20,7 +20,7 @@ export const useMainStore = defineStore('main', () => {
     }
   }
 
-  const cityList = ref([])
+  const cityList = ref<Types.City[]>([])
 
   // 取得縣市列表
   const getCityList = async () => {
@@ -51,54 +51,62 @@ export const useMainStore = defineStore('main', () => {
     }
   })
 
+  // 將縣市英文代碼轉為 V2.1 PostalAddress.City 使用的中文縣市名
+  const toCityName = async (city: string) => {
+    if (!city) return ''
+    if (!cityList.value.length) await getCityList()
+    return cityList.value.find((c: Types.City) => c.City === city)?.CityName ?? city
+  }
+  // 組裝列表 OData 查詢字串(city 改以 $filter 篩選,keyword 以 contains 比對)
+  const buildListParams = (fields: string, nameField: string, cityName: string, keyword: string) => {
+    const filters: string[] = []
+    if (cityName) filters.push(`PostalAddress/City eq '${cityName}'`)
+    if (keyword) filters.push(`contains(${nameField}, '${keyword}')`)
+    const filter = filters.length ? `&$filter=${filters.join(' and ')}` : ''
+    return `?$top=${itemCount}&$select=${fields}${filter}&$format=JSON`
+  }
+  const config = () => ({ headers: { Authorization: token.value } })
+
   // 取得所有景點資料
   const getScenicSpotList = async (city = '', keyword = '') => {
-    const fields = 'ScenicSpotID,Picture,ScenicSpotName,Address,City,Class1,Class2,Class3'
-    const params = `${city}?$top=${itemCount}&$select=${fields}&$filter=contains(ScenicSpotName,'${keyword}')`
+    const fields = 'AttractionID,AttractionName,PostalAddress,Images,Tags'
+    const params = buildListParams(fields, 'AttractionName', await toCityName(city), keyword)
     try {
-      const { data } = await api.getScenicSpot(params, {
-        headers: { Authorization: token.value },
-      })
-      scenicSpotList.value = apiAdapter.getScenicSpotList(data)
+      const { data } = await api.getScenicSpot(params, config())
+      scenicSpotList.value = apiAdapter.getScenicSpotList(data.value)
     } catch (error) {
       throw error
     }
   }
   // 取得所有餐飲資料
   const getRestaurantList = async (city = '', keyword = '') => {
-    const fields = 'RestaurantID,Picture,RestaurantName,Address,City,Class'
-    const params = `${city}?$top=${itemCount}&$select=${fields}&$filter=contains(RestaurantName,'${keyword}')`
+    const fields = 'RestaurantID,RestaurantName,PostalAddress,Images'
+    const params = buildListParams(fields, 'RestaurantName', await toCityName(city), keyword)
     try {
-      const { data } = await api.getRestaurant(params, {
-        headers: { Authorization: token.value },
-      })
-      restaurantList.value = apiAdapter.getRestaurantList(data)
+      const { data } = await api.getRestaurant(params, config())
+      restaurantList.value = apiAdapter.getRestaurantList(data.value)
     } catch (error) {
       throw error
     }
   }
   // 取得所有旅宿資料
   const getHotelList = async (city = '', keyword = '') => {
-    const fields = 'HotelID,Picture,HotelName,Address,City,Class'
-    const params = `${city}?$top=${itemCount}&$select=${fields}&$filter=contains(HotelName,'${keyword}')`
+    const fields = 'HotelID,HotelName,PostalAddress,Images'
+    const params = buildListParams(fields, 'HotelName', await toCityName(city), keyword)
     try {
-      const { data } = await api.getHotel(params, {
-        headers: { Authorization: token.value },
-      })
-      hotelList.value = apiAdapter.getHotelList(data)
+      const { data } = await api.getHotel(params, config())
+      hotelList.value = apiAdapter.getHotelList(data.value)
     } catch (error) {
       throw error
     }
   }
   // 取得所有活動資料
   const getActivityList = async (city = '', keyword = '') => {
-    const fields = 'ActivityID,Picture,ActivityName,Address,City,Class1,Class2'
-    const params = `${city}?$top=${itemCount}&$select=${fields}&$filter=contains(ActivityName,'${keyword}')`
+    const fields = 'EventID,EventName,PostalAddress,Images,Tags'
+    const params = buildListParams(fields, 'EventName', await toCityName(city), keyword)
     try {
-      const { data } = await api.getActivity(params, {
-        headers: { Authorization: token.value },
-      })
-      activityList.value = apiAdapter.getActivityList(data)
+      const { data } = await api.getActivity(params, config())
+      activityList.value = apiAdapter.getActivityList(data.value)
     } catch (error) {
       throw error
     }
@@ -106,59 +114,50 @@ export const useMainStore = defineStore('main', () => {
 
   const detailData = ref()
 
+  // ServiceTimeInfo 與 Tags 並非所有資源皆有(Event 無 ServiceTimeInfo,Restaurant/Hotel 無 Tags),故以 extra 個別帶入
+  const detailFields = (nameField: string, extra = '') =>
+    `${nameField},PostalAddress,Images,Description,Telephones,WebsiteUrl${extra}`
+
   // 取得指定景點資料
   const getScenicSpot = async (id: string) => {
-    const fields =
-      'Picture,ScenicSpotName,Address,City,Class1,Class2,Class3,OpenTime,DescriptionDetail,Phone,WebsiteUrl'
-    const params = `?$select=${fields}&$filter=ScenicSpotID eq '${id}'`
+    const params = `?$select=${detailFields('AttractionName', ',ServiceTimeInfo,Tags')}&$filter=AttractionID eq '${id}'&$format=JSON`
     try {
-      const { data } = await api.getScenicSpot(params, {
-        headers: { Authorization: token.value },
-      })
-      if (!data.length) throw new Error('找不到網頁')
-      detailData.value = apiAdapter.getScenicSpot(data[0])
+      const { data } = await api.getScenicSpot(params, config())
+      if (!data.value.length) throw new Error('找不到網頁')
+      detailData.value = apiAdapter.getScenicSpot(data.value[0])
     } catch (error) {
       throw error
     }
   }
   // 取得指定餐飲資料
   const getRestaurant = async (id: string) => {
-    const fields = 'Picture,RestaurantName,Address,City,Class,OpenTime,Phone,WebsiteUrl'
-    const params = `?$select=${fields}&$filter=RestaurantID eq '${id}'`
+    const params = `?$select=${detailFields('RestaurantName', ',ServiceTimeInfo')}&$filter=RestaurantID eq '${id}'&$format=JSON`
     try {
-      const { data } = await api.getRestaurant(params, {
-        headers: { Authorization: token.value },
-      })
-      if (!data.length) throw new Error('找不到網頁')
-      detailData.value = apiAdapter.getRestaurant(data[0])
+      const { data } = await api.getRestaurant(params, config())
+      if (!data.value.length) throw new Error('找不到網頁')
+      detailData.value = apiAdapter.getRestaurant(data.value[0])
     } catch (error) {
       throw error
     }
   }
   // 取得指定旅宿資料
   const getHotel = async (id: string) => {
-    const fields = 'Picture,HotelName,Address,City,Class,Phone,WebsiteUrl'
-    const params = `?$select=${fields}&$filter=HotelID eq '${id}'`
+    const params = `?$select=${detailFields('HotelName', ',ServiceTimeInfo')}&$filter=HotelID eq '${id}'&$format=JSON`
     try {
-      const { data } = await api.getHotel(params, {
-        headers: { Authorization: token.value },
-      })
-      if (!data.length) throw new Error('找不到網頁')
-      detailData.value = apiAdapter.getHotel(data[0])
+      const { data } = await api.getHotel(params, config())
+      if (!data.value.length) throw new Error('找不到網頁')
+      detailData.value = apiAdapter.getHotel(data.value[0])
     } catch (error) {
       throw error
     }
   }
   // 取得指定活動資料
   const getActivity = async (id: string) => {
-    const fields = 'Picture,ActivityName,Address,City,Class1,Class2,Phone,WebsiteUrl'
-    const params = `?$select=${fields}&$filter=ActivityID eq '${id}'`
+    const params = `?$select=${detailFields('EventName', ',Tags,StartDateTime,EndDateTime')}&$filter=EventID eq '${id}'&$format=JSON`
     try {
-      const { data } = await api.getActivity(params, {
-        headers: { Authorization: token.value },
-      })
-      if (!data.length) throw new Error('找不到網頁')
-      detailData.value = apiAdapter.getActivity(data[0])
+      const { data } = await api.getActivity(params, config())
+      if (!data.value.length) throw new Error('找不到網頁')
+      detailData.value = apiAdapter.getActivity(data.value[0])
     } catch (error) {
       throw error
     }

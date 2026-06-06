@@ -32,6 +32,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
   - `api/` - API 請求層（index.ts - API 方法, adapter.ts - 數據轉換）
   - `composables/` - Vue 組合式 API（favorite.ts - 收藏, loading.ts - 加載狀態, paginatedItems.ts - 分頁）
   - `types.ts` - TypeScript 型別定義
+- `docs/openapi.yaml` - OpenAPI/Swagger 文件，描述本站消費的觀光資料 V2.1 四類端點
 
 ### 架構設計
 
@@ -61,6 +62,9 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - 請求/響應攔截器管理 isLoading 狀態
 - 包含速率限制錯誤處理（429 status code）
 - Token 通過代理 API 取得（VITE_TOKEN_API_URL）
+- 觀光資料已改接 V2.1（OData V4）：路徑前綴 `/api/tourism/service/odata/V2/Tourism/{資源}`
+- 回應包在 `{ "value": [...] }`，store 需讀 `data.value`
+- 路由 type 與 API 資源名不同：`ScenicSpot`→`Attraction`、`Activity`→`Event`；`Hotel`/`Restaurant` 不變
 
 ### 技術棧
 - Vue 3 - 前端框架
@@ -100,12 +104,16 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - 查詢參數組裝在 store 的 get* 方法中（如 getScenicSpotList）
 - 使用 OData 查詢語法（$select、$filter、$top）
 - 重要：所有 API 請求都需要 Authorization header 中的 token
+- 縣市篩選改用 `$filter=PostalAddress/City eq '中文縣市名'`（store 的 toCityName 將英文代碼轉中文）
+- 名稱搜尋用 `contains(AttractionName/EventName/...)`；詳情用 `{資源}ID eq '...'`
 
 ### 調試 API 問題
 - 檢查 router.ts 中的 429 速率限制錯誤處理
 - token 每 6 小時自動更新，若過期會導致 401 錯誤
 - 使用 Vitest UI (`npm run vitest:ui`) 進行測試和調試
 - 在 api/index.ts 中設置的攔截器會自動管理加載狀態
+- $select 欄位需逐資源確認：Tags 僅 Attraction/Event 有；ServiceTimeInfo 不存在於 Event，誤選會回 400
+- 巢狀欄位：地址 PostalAddress.City、電話 Telephones[].Tel、影像 Images[].URL
 
 ### 樣式修改
 - 使用 UnoCSS 原子化 CSS（見 vite.config.ts）

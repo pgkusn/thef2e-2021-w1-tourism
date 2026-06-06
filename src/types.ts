@@ -1,17 +1,5 @@
 import type { RouteLocation } from 'vue-router'
 
-type PictureUrl = {
-  PictureUrl1: string
-  PictureUrl2: string
-  PictureUrl3: string
-}
-type PictureDescription = {
-  PictureDescription1: string
-  PictureDescription2: string
-  PictureDescription3: string
-}
-export type KeysOfPictureUrl = keyof PictureUrl
-export type KeysOfPictureDescription = keyof PictureDescription
 export type InitData = (to: RouteLocation, from: RouteLocation) => Promise<void>
 export type TourismType = 'ScenicSpot' | 'Restaurant' | 'Hotel' | 'Activity'
 
@@ -38,65 +26,62 @@ export interface ApiConfig {
     Authorization: string
   }
 }
-export interface ScenicSpotListApiResponse {
-  ScenicSpotID: string
-  ScenicSpotName: string
-  Address: string
+
+// 觀光資料 V2.1 巢狀結構
+export interface Image {
+  Name: string
+  Description: string
+  URL: string
+}
+export interface PostalAddress {
   City: string
-  Picture: PictureUrl & PictureDescription
-  Class1: string
-  Class2: string
-  Class3: string
-  SrcUpdateTime: string
+  CityCode: string
+  Town: string
+  ZipCode: string
+  StreetAddress: string
+}
+export interface Telephone {
+  Tel: string
+  Ext: number | null
+}
+
+// V2.1 採 OData V4,資料包在 value 陣列
+export interface ODataResponse<T> {
+  value: T[]
+}
+
+interface TourismCommon {
+  PositionLat: number
+  PositionLon: number
+  PostalAddress: PostalAddress
+  Telephones: Telephone[]
+  Images: Image[]
+  Tags: string[]
+  Description: string
+  WebsiteUrl: string
+  ServiceTimeInfo?: string
   UpdateTime: string
 }
-export interface ScenicSpotApiResponse extends ScenicSpotListApiResponse {
-  OpenTime: string
-  DescriptionDetail: string
-  Phone: string
-  WebsiteUrl: string
+
+export interface AttractionApiResponse extends TourismCommon {
+  AttractionID: string
+  AttractionName: string
+  AttractionClasses: number[]
 }
-export interface RestaurantListApiResponse {
+export interface RestaurantApiResponse extends TourismCommon {
   RestaurantID: string
   RestaurantName: string
-  Address: string
-  City: string
-  Picture: PictureUrl & PictureDescription
-  Class: string
-  SrcUpdateTime: string
-  UpdateTime: string
+  CuisineClasses: number[]
 }
-export interface RestaurantApiResponse extends RestaurantListApiResponse {
-  OpenTime: string
-  Phone: string
-  WebsiteUrl: string
-}
-export interface HotelListApiResponse {
+export interface HotelApiResponse extends TourismCommon {
   HotelID: string
   HotelName: string
-  Address: string
-  City: string
-  Picture: PictureUrl & PictureDescription
-  Class: string
-  SrcUpdateTime: string
-  UpdateTime: string
+  HotelClasses: number[]
 }
-export interface HotelApiResponse extends HotelListApiResponse {
-  Phone: string
-  WebsiteUrl: string
-}
-export interface ActivityListApiResponse {
-  ActivityID: string
-  ActivityName: string
-  Address: string
-  City: string
-  Picture: PictureUrl & PictureDescription
-  Class1: string
-  Class2: string
-  SrcUpdateTime: string
-  UpdateTime: string
-}
-export interface ActivityApiResponse extends ActivityListApiResponse {
-  Phone: string
-  WebsiteUrl: string
+export interface EventApiResponse extends TourismCommon {
+  EventID: string
+  EventName: string
+  EventClasses: number[]
+  StartDateTime: string
+  EndDateTime: string
 }

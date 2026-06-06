@@ -1,0 +1,289 @@
+openapi: 3.0.3
+info:
+  title: 觀光資料 V2.1 API（本網站消費範圍）
+  description: >
+    台灣旅遊景點導覽網站串接之交通部觀光署「觀光資訊資料庫開放資料 V2.1」端點。
+    本文件僅涵蓋網站實際使用的四類資源（景點 Attraction、餐飲 Restaurant、
+    旅宿 Hotel、活動 Event）及其查詢參數與回應結構。
+    對應程式：src/api/index.ts（路徑）、src/api/adapter.ts（欄位轉換）。
+  version: 2.1.0
+servers:
+  - url: https://tdx.transportdata.tw/api/tourism
+    description: 正式環境（對應 .env.production 之 VITE_API_URL=https://tdx.transportdata.tw）
+security:
+  - bearerAuth: []
+tags:
+  - name: Tourism
+    description: 觀光四類資料（OData V2.1）
+paths:
+  /service/odata/V2/Tourism/Attraction:
+    get:
+      tags: [Tourism]
+      operationId: getAttractions
+      summary: 取得景點列表（V1.0 ScenicSpot 改名）
+      parameters:
+        - $ref: '#/components/parameters/top'
+        - $ref: '#/components/parameters/select'
+        - $ref: '#/components/parameters/format'
+        - name: $filter
+          in: query
+          description: >
+            OData 篩選。城市以 PostalAddress/City 比對、名稱以 contains 比對。
+            範例：PostalAddress/City eq '宜蘭縣' and contains(AttractionName, '山')
+          schema: { type: string }
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AttractionResponse'
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '429': { $ref: '#/components/responses/RateLimited' }
+  /service/odata/V2/Tourism/Restaurant:
+    get:
+      tags: [Tourism]
+      operationId: getRestaurants
+      summary: 取得餐飲列表
+      parameters:
+        - $ref: '#/components/parameters/top'
+        - $ref: '#/components/parameters/select'
+        - $ref: '#/components/parameters/format'
+        - name: $filter
+          in: query
+          description: "範例：PostalAddress/City eq '桃園市' and contains(RestaurantName, '牛肉')"
+          schema: { type: string }
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestaurantResponse'
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '429': { $ref: '#/components/responses/RateLimited' }
+  /service/odata/V2/Tourism/Hotel:
+    get:
+      tags: [Tourism]
+      operationId: getHotels
+      summary: 取得旅宿列表
+      parameters:
+        - $ref: '#/components/parameters/top'
+        - $ref: '#/components/parameters/select'
+        - $ref: '#/components/parameters/format'
+        - name: $filter
+          in: query
+          description: "範例：PostalAddress/City eq '臺東縣' and contains(HotelName, '民宿')"
+          schema: { type: string }
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HotelResponse'
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '429': { $ref: '#/components/responses/RateLimited' }
+  /service/odata/V2/Tourism/Event:
+    get:
+      tags: [Tourism]
+      operationId: getEvents
+      summary: 取得活動列表（V1.0 Activity 改名）
+      parameters:
+        - $ref: '#/components/parameters/top'
+        - $ref: '#/components/parameters/select'
+        - $ref: '#/components/parameters/format'
+        - name: $filter
+          in: query
+          description: "範例：PostalAddress/City eq '金門縣' and contains(EventName, '馬拉松')"
+          schema: { type: string }
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EventResponse'
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '429': { $ref: '#/components/responses/RateLimited' }
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: TDX OAuth2 token（透過 VITE_TOKEN_API_URL 代理取得，置於 Authorization header）
+  parameters:
+    top:
+      name: $top
+      in: query
+      description: 回傳筆數上限（網站列表使用 100）
+      schema: { type: integer, default: 100 }
+    select:
+      name: $select
+      in: query
+      description: 選取欄位（逗號分隔，支援複合屬性如 PostalAddress、Images）
+      schema: { type: string }
+    format:
+      name: $format
+      in: query
+      description: 回應格式
+      schema: { type: string, enum: [JSON, XML], default: JSON }
+  responses:
+    BadRequest:
+      description: 查詢語法錯誤（如 $select 指定不存在欄位）
+    Unauthorized:
+      description: token 缺失或過期
+    RateLimited:
+      description: 超過存取頻率（5 次/分）
+  schemas:
+    AttractionResponse:
+      type: object
+      properties:
+        value:
+          type: array
+          items: { $ref: '#/components/schemas/Attraction' }
+    RestaurantResponse:
+      type: object
+      properties:
+        value:
+          type: array
+          items: { $ref: '#/components/schemas/Restaurant' }
+    HotelResponse:
+      type: object
+      properties:
+        value:
+          type: array
+          items: { $ref: '#/components/schemas/Hotel' }
+    EventResponse:
+      type: object
+      properties:
+        value:
+          type: array
+          items: { $ref: '#/components/schemas/Event' }
+    Attraction:
+      type: object
+      properties:
+        AttractionID: { type: string }
+        AttractionName: { type: string }
+        Description: { type: string }
+        AttractionClasses:
+          type: array
+          items: { type: integer }
+          description: 景點類型代碼（無名稱對照）
+        Tags:
+          type: array
+          items: { type: string }
+          description: 人類可讀標籤；網站以此作為 classes 顯示
+        PositionLat: { type: number }
+        PositionLon: { type: number }
+        ServiceTimeInfo: { type: string }
+        WebsiteUrl: { type: string }
+        PostalAddress: { $ref: '#/components/schemas/PostalAddress' }
+        Telephones:
+          type: array
+          items: { $ref: '#/components/schemas/Telephone' }
+        Images:
+          type: array
+          items: { $ref: '#/components/schemas/Image' }
+        UpdateTime: { type: string, format: date-time }
+    Restaurant:
+      type: object
+      properties:
+        RestaurantID: { type: string }
+        RestaurantName: { type: string }
+        Description: { type: string }
+        CuisineClasses:
+          type: array
+          items: { type: integer }
+          description: 餐飲類型代碼（無 Tags 欄位）
+        PositionLat: { type: number }
+        PositionLon: { type: number }
+        ServiceTimeInfo: { type: string }
+        WebsiteUrl: { type: string }
+        PostalAddress: { $ref: '#/components/schemas/PostalAddress' }
+        Telephones:
+          type: array
+          items: { $ref: '#/components/schemas/Telephone' }
+        Images:
+          type: array
+          items: { $ref: '#/components/schemas/Image' }
+        UpdateTime: { type: string, format: date-time }
+    Hotel:
+      type: object
+      properties:
+        HotelID: { type: string }
+        HotelName: { type: string }
+        HotelLicenseNumber: { type: string }
+        Description: { type: string }
+        HotelClasses:
+          type: array
+          items: { type: integer }
+        HotelStars: { type: integer, description: '星級 0~6（無星級為 0）' }
+        PositionLat: { type: number }
+        PositionLon: { type: number }
+        ServiceTimeInfo: { type: string }
+        WebsiteUrl: { type: string }
+        PostalAddress: { $ref: '#/components/schemas/PostalAddress' }
+        Telephones:
+          type: array
+          items: { $ref: '#/components/schemas/Telephone' }
+        Images:
+          type: array
+          items: { $ref: '#/components/schemas/Image' }
+        UpdateTime: { type: string, format: date-time }
+    Event:
+      type: object
+      properties:
+        EventID: { type: string }
+        EventName: { type: string }
+        Description: { type: string }
+        EventClasses:
+          type: array
+          items: { type: integer }
+        Tags:
+          type: array
+          items: { type: string }
+        StartDateTime: { type: string, format: date-time }
+        EndDateTime: { type: string, format: date-time }
+        EventStatus: { type: string }
+        PositionLat: { type: number }
+        PositionLon: { type: number }
+        WebsiteUrl: { type: string }
+        PostalAddress: { $ref: '#/components/schemas/PostalAddress' }
+        Telephones:
+          type: array
+          items: { $ref: '#/components/schemas/Telephone' }
+        Images:
+          type: array
+          items: { $ref: '#/components/schemas/Image' }
+        UpdateTime: { type: string, format: date-time }
+    PostalAddress:
+      type: object
+      description: V2.1 巢狀郵政地址（取代 V1.0 Address/City/ZipCode）
+      properties:
+        City: { type: string, description: 縣市名稱（中文，如 宜蘭縣） }
+        CityCode: { type: string }
+        Town: { type: string }
+        TownCode: { type: string }
+        ZipCode: { type: string }
+        StreetAddress: { type: string }
+    Telephone:
+      type: object
+      description: V2.1 巢狀電話（取代 V1.0 Phone）
+      properties:
+        Tel: { type: string }
+        Ext: { type: integer, nullable: true }
+    Image:
+      type: object
+      description: V2.1 彈性多筆影像（取代 V1.0 PictureUrl1~3）
+      properties:
+        Name: { type: string }
+        Description: { type: string }
+        URL: { type: string }
+        Width: { type: integer, nullable: true }
+        Height: { type: integer, nullable: true }
